@@ -15,59 +15,63 @@
 
 <ion-content style=" background: #efefef">
 
-    <ion-grid style="margin-top: 20%">
-      <ion-row style="padding: 8px">
-        <ion-col col-12 style="text-align: center; padding: 0; color: #666f76"><label>User Settings</label></ion-col>
-        <ion-col col-12 style="padding-left: 60px; padding-right: 60px;"><hr style="color: #666f76; font-weight: bold"></ion-col>
-      </ion-row>
-    </ion-grid>
+  <ion-grid style="margin-top: 5%">
+    <ion-row style="padding: 8px">
+      <ion-col col-12 style="text-align: center; padding: 0; color: #666f76"><label>User Settings</label></ion-col>
+      <ion-col col-12 style="padding-left: 60px; padding-right: 60px;">
+        <hr style="color: #666f76; font-weight: bold">
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
 
-    <ion-row style=" background: white; padding-top: 10px; padding-bottom: 10px; padding-left: 10px ">
-        <ion-col col-8>
-          <div style="font-size: 17px; padding: 0; color: #666f76"><label>Wi-Fi Download</label></div>
-          <div style="font-size: 12px; color:blue"><label>Dornload using cellular data only</label></div>
-        </ion-col>
-        <ion-col style="text-align: -webkit-right; margin-top: 8px"><ion-toggle checked="false"></ion-toggle></ion-col>        
-      </ion-row>
+  <ion-row style=" background: white; padding-top: 10px; padding-bottom: 10px; padding-left: 10px ">
+    <ion-col col-8>
+      <div style="font-size: 17px; padding: 0; color: #666f76"><label>Wi-Fi Download</label></div>
+      <div style="font-size: 12px; color:blue"><label>Dornload using cellular data only</label></div>
+    </ion-col>
+    <ion-col style="text-align: -webkit-right; margin-top: 8px">
+      <ion-toggle checked="false"></ion-toggle>
+    </ion-col>
+  </ion-row>
 
-      <ion-row style=" background: white; padding-top: 10px; padding-bottom: 10px; padding-left: 10px; margin-top: 20px">
-        <ion-col col-12>
-            <div style="font-size: 10px; color: #666f76"><label>Set time to download</label></div>
-          </ion-col>
-          <ion-col style="padding-right: 10px">
-              <ion-item>
-                  <ion-label>Hour</ion-label>
-                  <ion-datetime displayFormat="h:mm A" pickerFormat="h mm A"></ion-datetime>
-                </ion-item>
-          </ion-col>
-        </ion-row>
+  <ion-row style=" background: white; padding-top: 10px; padding-bottom: 10px; padding-left: 10px; margin-top: 20px">
+    <ion-col col-12>
+      <div style="font-size: 10px; color: #666f76"><label>Set time to download</label></div>
+    </ion-col>
+    <ion-col style="padding-right: 10px">
+      <ion-item>
+        <ion-label>Hour</ion-label>
+        <ion-datetime displayFormat="h:mm A" pickerFormat="h mm A"></ion-datetime>
+      </ion-item>
+    </ion-col>
+  </ion-row>
 
-        <ion-row style=" background: white; padding-top: 10px; padding-bottom: 10px; padding-left: 10px; margin-top: 20px">
-            <ion-col col-12 >
-                <div style="font-size: 10px; color: #666f76"><label>Set time to download</label></div>
-              </ion-col>
-              <ion-col style="padding-right: 10px;">
-                  <ion-list>
-                      <ion-item>
-                        <ion-label>Days</ion-label>
-                        <ion-select>
-                          <ion-option value="Sunday">Sunday</ion-option>
-                          <ion-option value="Monday">Monday</ion-option>
-                          <ion-option value="Tuesday">Tuesday</ion-option>
-                          <ion-option value="Wednesday">Wednesday</ion-option>
-                          <ion-option value="Thursday">Thursday</ion-option>
-                          <ion-option value="Friday">Friday</ion-option>
-                          <ion-option value="Saturday">Saturday</ion-option>
-                        </ion-select>
-                      </ion-item>
-                    </ion-list>
-              </ion-col>
-            </ion-row>
+  <ion-row style=" background: white;padding-left: 10px; margin-top: 20px">
+    <ion-col col-12>
+      <div style="font-size: 10px; color: #666f76"><label>Set time to download</label></div>
+    </ion-col>
+    <ion-col style="padding-right: 10px;">
+      <ion-list>
+        <ion-item>
+          <ion-label>Days</ion-label>
+          <ion-select multiple="true">
+            <ion-option value="Sunday">Sunday</ion-option>
+            <ion-option value="Monday">Monday</ion-option>
+            <ion-option value="Tuesday">Tuesday</ion-option>
+            <ion-option value="Wednesday">Wednesday</ion-option>
+            <ion-option value="Thursday">Thursday</ion-option>
+            <ion-option value="Friday">Friday</ion-option>
+            <ion-option value="Saturday">Saturday</ion-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+    </ion-col>
+  </ion-row>
 
-            <ion-row style="margin-top: 40px; text-align: center">
-                <ion-col col-12 style=" padding-left: 0;">  
-                    <button ion-button color="secondary"  style="width: 50%; padding: 25px">APPLY</button>
-                </ion-col>
-              </ion-row>
+  <ion-row style="margin-top: 40px; text-align: center">
+    <ion-col col-12 style=" padding-left: 0;">
+      <button ion-button color="secondary" style="width: 50%; padding: 25px">APPLY</button>
+    </ion-col>
+  </ion-row>
 </ion-content>

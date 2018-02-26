@@ -7,7 +7,7 @@
 
 <ion-header>
   <ion-navbar color="violeta">
-      <ion-title style="text-align: center; margin-right: 20px">SIGN UP</ion-title>
+    <ion-title style="text-align: center; margin-right: 20px">SIGN UP</ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -15,47 +15,70 @@
 <ion-content padding style="background: #e6e8ec">
 
   <ion-grid>
-      <ion-row style="margin-top: 5px">
-        <ion-col col-12 style="text-align: center"> 
-            <label style="font-size: 25px; color: gray; ">Welcome</label>          
-        </ion-col>
-      </ion-row>
+    <ion-row style="margin-top: 5px">
+      <ion-col col-12 style="text-align: center">
+        <label style="font-size: 25px; color: gray; ">Welcome</label>
+      </ion-col>
+    </ion-row>
 
+    <form novalidate [formGroup]="form">
       <ion-row>
-        <ion-col col-12 style="text-align: center"> 
-            <label style=" color: gray; ">Complete the form to sign up</label>          
-        </ion-col>
-      </ion-row>
-      
-      <ion-row style="margin-top: 5px">
-        <ion-col col-12 style="background: white; padding-left: 10px;"> 
-          <ion-input type="text" placeholder="Full Name"></ion-input>
+        <ion-col col-12 style="text-align: center">
+          <label style=" color: gray; ">Complete the form to sign up</label>
         </ion-col>
       </ion-row>
 
       <ion-row style="margin-top: 5px">
-        <ion-col col-12 style="background: white; padding-left: 10px;"> 
-          <ion-input type="email" placeholder="Email"></ion-input>
+        <ion-col col-12 style="background: white; padding-left: 10px;">
+          <ion-input type="text" placeholder="First Name" formControlName="first"></ion-input>
         </ion-col>
-      </ion-row>
-      
-      <ion-row style="margin-top: 5px">
-        <ion-col col-12 style="background: white; padding-left: 10px;"> 
-          <ion-input type="password" placeholder="password"></ion-input>
-        </ion-col>
+        <p class="errorMessage" *ngIf="form.get('first').hasError('required') && form.get('first').touched"> First Name is required </p>
       </ion-row>
 
       <ion-row style="margin-top: 5px">
-        <ion-col col-12 style="background: white; padding-left: 10px;"> 
-          <ion-input type="password" placeholder="confirm password"></ion-input>
+        <ion-col col-12 style="background: white; padding-left: 10px;">
+          <ion-input type="text" placeholder="Last Name" formControlName="last"></ion-input>
         </ion-col>
+        <p class="errorMessage" *ngIf="form.get('last').hasError('required') && form.get('last').touched"> Last Name is required </p>
       </ion-row>
-      
-      <ion-row style="margin-top: 25px; text-align: center">
-        <ion-col col-12 style=" padding-left: 0;">  
-            <button ion-button color="amarillo" (click)="goHome()" style="width: 100%; padding: 25px"><label style=" color: #757575; font-size: 20px ">Sign Up</label></button>
+
+      <ion-row style="margin-top: 5px">
+        <ion-col col-12 style="background: white; padding-left: 10px;">
+          <ion-input type="email" placeholder="Email" formControlName="email"></ion-input>
         </ion-col>
+         <p class="errorMessage" *ngIf="(form.get('email').hasError('required') && form.get('email').touched)||(!form.get('email').valid  && form.get('email').touched)">
+            <span *ngIf="form.get('email').hasError('required') && form.get('email').touched">Email is required</span>
+            <span *ngIf="!form.get('email').valid  && form.get('email').touched">Email is invalid</span>
+        </p>
       </ion-row>
+
+      <ion-row style="margin-top: 5px">
+        <ion-col col-12 style="background: white; padding-left: 10px;">
+          <ion-input type="password" placeholder="Password" formControlName="password"></ion-input>
+        </ion-col>
+        <p class="errorMessage" *ngIf="form.get('password').hasError('required') && form.get('password').touched"> Password is required </p>
+      </ion-row>
+
+      <ion-row style="margin-top: 5px">
+        <ion-col col-12 style="background: white; padding-left: 10px;">
+          <ion-input type="password" placeholder="Confirm Password" formControlName="confirm"></ion-input>
+        </ion-col>
+
+      <p class="errorMessage" *ngIf="(form.get('confirm').hasError('required') && form.get('confirm').touched) || (form.get('confirm').value!=form.get('password').value && form.get('confirm').touched)">   
+        <span  *ngIf="form.get('confirm').hasError('required') && form.get('confirm').touched"> Confirm Password is required. </span>
+        <span  *ngIf="form.get('confirm').value!=form.get('password').value && form.get('confirm').touched"> Password doesn't match</span>
+      </p>
+      </ion-row>
+    </form>
+
+    <ion-row style="margin-top: 25px; text-align: center">
+      <ion-col col-12 style=" padding-left: 0;">
+        <button ion-button color="amarillo" (click)="goHome()" style="width: 100%; padding: 25px">
+          <label style=" color: #757575; font-size: 20px" *ngIf="!requesting">Sign Up</label>
+          <ion-spinner *ngIf="requesting"></ion-spinner>
+        </button>
+      </ion-col>
+    </ion-row>
 
   </ion-grid>
 

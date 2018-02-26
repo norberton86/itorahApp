@@ -15,6 +15,10 @@ import {SettingsPageModule} from '../pages/settings/settings.module';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { LoginProvider } from '../providers/login/login';
+
+import { HttpModule } from '@angular/http';
+
 
 @NgModule({
   declarations: [
@@ -30,7 +34,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     SignUpPageModule,
     NoConnectionPageModule,
     PlaylistPageModule,
-    SettingsPageModule
+    SettingsPageModule,
+    HttpModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -41,7 +46,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    LoginProvider
   ]
 })
 export class AppModule {}

@@ -7,7 +7,9 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { HomePage } from '../pages/home/home';
 import { ListPage } from '../pages/list/list';
 import { LoginPage } from './../pages/login/login';
-import { PlaylistPage} from '../pages/playlist/playlist'
+import { PlaylistPage } from '../pages/playlist/playlist'
+
+import { LoginProvider } from '../providers/login/login';
 
 @Component({
   templateUrl: 'app.html'
@@ -15,11 +17,11 @@ import { PlaylistPage} from '../pages/playlist/playlist'
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = LoginPage;
+  rootPage: any;
 
-  pages: Array<{title: string, component: any}>;
+  pages: Array<{ title: string, component: any }>;
 
-  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen) {
+  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen, private loginProvider: LoginProvider) {
     this.initializeApp();
 
     // used for an example of ngFor and navigation
@@ -36,6 +38,11 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+
+      if (this.loginProvider.getToken() == '')
+        this.rootPage = LoginPage
+      else
+        this.rootPage = HomePage
     });
   }
 

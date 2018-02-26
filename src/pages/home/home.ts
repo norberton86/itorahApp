@@ -2,7 +2,7 @@ import { SettingsPage } from './../settings/settings';
 import { NoConnectionPage } from './../no-connection/no-connection';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
+import {LoginProvider} from '../../providers/login/login';
 /**
  * Generated class for the HomePage page.
  *
@@ -17,11 +17,18 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class HomePage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  name:string=''
+  constructor(public navCtrl: NavController, public navParams: NavParams,private loginProvider:LoginProvider) {
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad HomePage');
+
+    if(this.loginProvider.getToken()!='')  //to load the initials of the user's name
+    {
+      this.name = JSON.parse(localStorage.getItem('userItorah')).name;
+      this.name = this.name.split(" ")[0][0] + this.name.split(" ")[1][0] 
+    }
   }
 
   goNoConnection(): void{

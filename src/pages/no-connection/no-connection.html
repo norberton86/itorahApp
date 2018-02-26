@@ -1,0 +1,63 @@
+<!--
+  Generated template for the NoConnectionPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+    <ion-toolbar color="violeta">
+      <ion-buttons start>
+        <button ion-button icon-only color="light" (click)="goSettings()">
+            <ion-icon name="settings" style="float: left"></ion-icon>
+        </button>
+      </ion-buttons>
+      <ion-title>iTorah<label style="font-size: 10px">.com</label></ion-title>
+      <ion-buttons end>
+            <button ion-button style="background: #508992; border-radius: 50%; color: #fc0">MM</button>
+      </ion-buttons>
+      <ion-buttons end>
+            <button ion-button icon-only color="light" menuToggle>
+                <ion-icon name="list"></ion-icon>
+            </button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+
+<ion-content padding style=" background: #13213c">
+
+    <ion-grid>
+        
+        <ion-row style="padding-top: 15%; text-align: center;">
+          <ion-col col-12>
+              <ion-img src="assets/imgs/connection.png" style="width:50%;padding-bottom: 50%;background: #13213c"></ion-img>
+          </ion-col>
+        </ion-row>
+
+        <ion-row style="margin-top: 5px">
+            <ion-col col-12 style="text-align: center"> 
+                <label style="font-size: 20px; color: white; ">No internet connection</label>  
+            </ion-col>
+          </ion-row>
+        <ion-row>
+          <ion-col col-12 style="text-align: center"> 
+              <label style="font-size: 15px; color: #757575; ">No internet connection found please check</label>   
+              <label style="font-size: 15px; color: #757575; ">Your connection or open the mobile app.</label>         
+          </ion-col>
+        </ion-row>
+
+        <ion-row style="margin-top: 40px">
+            <ion-col col-12 style="text-align: center"> 
+                <label style="font-size: 15px; color: white; ">Click here to open</label>          
+            </ion-col>
+          </ion-row>
+    
+        <ion-row style="text-align: center">
+            <ion-col col-12 style=" padding-left: 0;">  
+                <button ion-button color="amarillo" (click)="goPlayList()" style="width: 100%; padding: 25px">OPEN iTORAH APP</button>
+            </ion-col>
+          </ion-row>
+    
+      </ion-grid>
+
+</ion-content>

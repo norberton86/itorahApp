@@ -1,0 +1,40 @@
+<ion-menu side="right" [content]="content">
+  <ion-header>
+    <ion-toolbar color="azulMenu">
+      <ion-title>Menu</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content style="background: #082358">
+      <ion-grid style="padding: 10px">
+          <ion-row>
+            <ion-col col-12><label style="font-size: 20px; color: gray; ">My Account</label></ion-col>
+          </ion-row>
+          <ion-row style="margin-top: 10px">
+            <ion-col col-12 (click)="openPage()" menuClose><label style="font-size: 20px; color: white;">iTorah Mobile</label></ion-col>
+          </ion-row>
+          <ion-row style="margin-top: 10px">
+              <ion-col col-12><label style="font-size: 20px; color: gray; ">My Alerts</label></ion-col>
+          </ion-row>
+          <ion-row style="margin-top: 10px">
+              <ion-col col-12><label style="font-size: 20px; color: gray; ">My Order History</label></ion-col>
+          </ion-row>
+          <ion-row style="margin-top: 10px">
+              <ion-col col-12><label style="font-size: 20px; color: gray; ">Current Credits: 49($98)</label></ion-col>
+          </ion-row>
+          <ion-row style="margin-top: 10px">
+              <ion-col col-12><label style="font-size: 20px; color: gray; ">Completed Classes</label></ion-col>
+          </ion-row>
+          <ion-row style="margin-top: 10px">
+              <ion-col col-12><label style="font-size: 20px; color: gray; ">Take a Tour</label></ion-col>
+          </ion-row>
+          <ion-row style="margin-top: 10px">
+              <ion-col col-12><label style="font-size: 20px; color: gray; ">Shop</label></ion-col>
+          </ion-row>
+        </ion-grid>
+  </ion-content>
+
+</ion-menu>
+
+<!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus -->
+<ion-nav [root]="rootPage" #content swipeBackEnabled="true"></ion-nav>

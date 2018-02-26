@@ -1,0 +1,35 @@
+<!--
+  Generated template for the HomePage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+    <ion-toolbar color="violeta">
+      <ion-buttons start>
+        <button ion-button icon-only color="light" (click)="goSettings()">
+            <ion-icon name="settings" style="float: left"></ion-icon>
+        </button>
+      </ion-buttons>
+      <ion-title>iTorah<label style="font-size: 10px">.com</label></ion-title>
+      
+      <ion-buttons end>
+            <button ion-button (click)="goNoConnection()" style="background: #508992; border-radius: 50%; color: #fc0">MM</button>
+      </ion-buttons>
+      <ion-buttons end>
+            <button ion-button icon-only color="light" menuToggle>
+                <ion-icon name="list"></ion-icon>
+            </button>
+      </ion-buttons>
+      
+    </ion-toolbar>
+  </ion-header>
+
+
+<ion-content>
+
+    <div scroll="true" overflow-scroll="true" style="width: 100%;height: 100%">
+        <iframe style="width: 100%;height: 100%" src="http://itorah.3nom.com/" frameborder="0" allowfullscreen></iframe>
+    </div>
+
+</ion-content>

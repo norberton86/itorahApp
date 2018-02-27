@@ -3,6 +3,8 @@ import { NoConnectionPage } from './../no-connection/no-connection';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import {LoginProvider} from '../../providers/login/login';
+
+import { Network } from '@ionic-native/network';
 /**
  * Generated class for the HomePage page.
  *
@@ -18,7 +20,11 @@ import {LoginProvider} from '../../providers/login/login';
 export class HomePage {
 
   name:string=''
-  constructor(public navCtrl: NavController, public navParams: NavParams,private loginProvider:LoginProvider) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,private loginProvider:LoginProvider,private network: Network) {
+
+    let disconnectSubscription = this.network.onDisconnect().subscribe(() => {
+      this.loginProvider.ShowAlert("Ooops","Network disconnected");
+    });
   }
 
   ionViewDidLoad() {

@@ -25,10 +25,16 @@ export class NoConnectionPage {
   }
 
   goPlayList():void{
-    this.navCtrl.push(PlaylistPage);
+    this.navCtrl.push(PlaylistPage).then(() => {                 //remove the current page from the stack
+      const startIndex = this.navCtrl.getActive().index - 1;
+      this.navCtrl.remove(startIndex, 1);
+    });
   }
 
-  goSettings():void{
-    this.navCtrl.push(SettingsPage);
+  goSettings():void{                                              //remove the current page from the stack
+    this.navCtrl.push(SettingsPage).then(() => {                
+      const startIndex = this.navCtrl.getActive().index - 1;
+      this.navCtrl.remove(startIndex, 1);
+    });
   }
 }

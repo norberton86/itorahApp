@@ -20,13 +20,22 @@ import { Network } from '@ionic-native/network';
 export class HomePage {
 
   name:string=''
+  disconnectSubscription:any
+
   constructor(public navCtrl: NavController, public navParams: NavParams,private loginProvider:LoginProvider,private network: Network) {
 
-    let disconnectSubscription = this.network.onDisconnect().subscribe(() => {
-      this.loginProvider.ShowAlert("Ooops","Network disconnected");
-    });
+     /*this.disconnectSubscription = this.network.onDisconnect().subscribe(() => {
+        this.goNoConnection()
+     });*/
+     
+    /* let self=this
+     setTimeout(function(){
+        self.goNoConnection()
+     },5000)*/
   }
 
+
+   
   ionViewDidLoad() {
     console.log('ionViewDidLoad HomePage');
 

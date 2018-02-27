@@ -18,6 +18,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { LoginProvider } from '../providers/login/login';
 
 import { HttpModule } from '@angular/http';
+import { Network } from '@ionic-native/network';
 
 
 @NgModule({
@@ -47,7 +48,8 @@ import { HttpModule } from '@angular/http';
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    LoginProvider
+    LoginProvider,
+    Network
   ]
 })
 export class AppModule {}

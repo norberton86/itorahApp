@@ -19,6 +19,7 @@ import { LoginProvider } from '../providers/login/login';
 
 import { HttpModule } from '@angular/http';
 import { Network } from '@ionic-native/network';
+import { SettingsProvider } from '../providers/settings/settings';
 
 
 @NgModule({
@@ -49,7 +50,8 @@ import { Network } from '@ionic-native/network';
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     LoginProvider,
-    Network
+    Network,
+    SettingsProvider
   ]
 })
 export class AppModule {}

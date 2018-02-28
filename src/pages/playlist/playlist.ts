@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { SettingsPage } from '../settings/settings'
 
-import { SettingsProvider, Item } from '../../providers/settings/settings';
+import { SettingsProvider, Item,ItemPlayer } from '../../providers/settings/settings';
 
 /**
  * Generated class for the PlaylistPage page.
@@ -20,10 +20,8 @@ import { SettingsProvider, Item } from '../../providers/settings/settings';
 export class PlaylistPage {
 
   // Arreglo de la lista 1 
-  Listas = [{ id: "1", nombre: "Daily Halacha", descripcion: "by Rabbi Eli Mansour", color: "gris" },
-  { id: "2", nombre: "Daf Yomi", descripcion: "by Rabbi Eli Mansour", color: "gris" },
-  { id: "3", nombre: "Daily Tehillim - Chapter of the day", descripcion: "Recited by Hacham Baruch BenHaim ZT'L", color: "gris" },
-  { id: "4", nombre: "Daily Emunah", descripcion: "by Rabbi David Asher", color: "gris" }];
+  favorites:Array<ItemPlayer> = [];
+
   // Arreglo de la lista 2
   browseList: Array<Item> = [
     {
@@ -65,7 +63,7 @@ export class PlaylistPage {
   ]
   // Arreglo de la lista 2
   broweSubList: Array<Item> = [{ id: 7, nombre: "Parasha of the Week by Rabbi Eli Mansour", descripcion: "Updated 12/22/2017", color: "gris", isSavedPlaylist: false, subList: [], title: "" },
-  { id: 8, nombre: "DParasha of the Week by Rabbi Meyer Yedid", descripcion: "Updated 12/22/2017", color: "gris", isSavedPlaylist: false, subList: [], title: "" },
+  { id: 8, nombre: "Parasha of the Week by Rabbi Meyer Yedid", descripcion: "Updated 12/22/2017", color: "gris", isSavedPlaylist: false, subList: [], title: "" },
   { id: 9, nombre: "Parasha of the Week by Rabbi Duvi BenSoussan", descripcion: "Updated 12/22/2017", color: "gris", isSavedPlaylist: false, subList: [], title: "" },
   { id: 10, nombre: "Parasha of the Week by Rabbi David Sutton", descripcion: "Updated 12/22/2017", color: "gris", isSavedPlaylist: false, subList: [], title: "" },
   { id: 11, nombre: "Parasha of the Week by Rabbi Shlomo Diamond", descripcion: "Updated 12/22/2017", color: "gris", isSavedPlaylist: false, subList: [], title: "" },
@@ -78,13 +76,66 @@ export class PlaylistPage {
   content_play: boolean = true;
   positivo: boolean = true;//Vamriable para activar y desactivar los botones (playlist y browse)
   content_sig: boolean = false;
-  id: string;
+  
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private settingsProvider: SettingsProvider) {
 
     this.settingsProvider.getItemsInTrue().subscribe(items => {  //to refresh the items
 
     })
+  }
+
+
+
+  RemoveinFavorites(item:ItemPlayer)
+  {
+
+     var element=this.browseList.find(i=>i.id==item.id)
+     
+     if(element!=undefined && element!=null)  //if is in the first list
+     {
+      this.changeColor(element)
+     }
+     else{
+       element=this.broweSubList.find(i=>i.id==item.id) ////if is in the second list
+       
+       if(element!=undefined && element!=null)
+       this.changeColor(element)
+     }
+     
+  }
+
+  Add(item:Item)
+  {
+      if(this.favorites.findIndex(i=>i.id==item.id)>=0)  //if already exits
+        return
+      else
+      {
+        var newOne = new ItemPlayer()
+        newOne.id=item.id
+        newOne.color="gris"
+        
+        if(item.nombre.indexOf("by")<0)  //if it is the browlist
+        {
+          newOne.nombre=item.nombre
+          newOne.descripcion=item.descripcion
+        }
+        else                          //else it is the subBrowseList
+        {
+          newOne.nombre=item.nombre.split(" by ")[0]
+          newOne.descripcion="by "+item.nombre.split(" by ")[1]
+        }
+
+        this.favorites.push(newOne) //add to the favorite list
+        
+      }
+  }
+
+  Remove(item:Item)
+  {
+    var index =this.favorites.findIndex(i=>i.id==item.id)
+    this.favorites.splice(index, 1) //remove from favorite list
+
   }
 
   ionViewDidLoad() {
@@ -101,6 +152,9 @@ export class PlaylistPage {
     })
   }
 
+
+
+
   InitializeList(list: Array<Item>, source: Array<Item>) {
     source.forEach(element => {
 
@@ -109,6 +163,9 @@ export class PlaylistPage {
         if (element.id == item.id) {
           item.color = element.isSavedPlaylist ? "azulMenu" : "gris"
           item.isSavedPlaylist = element.isSavedPlaylist
+          
+          if(item.isSavedPlaylist)
+          this.Add(item)
         }
       })
 
@@ -154,108 +211,33 @@ export class PlaylistPage {
     this.content_sig = true
   }
 
-  ///Metodo del playList para seleccionar y deseleccionar las filas 
-  //Es lo mismo que el metodo de la lista dos y tres pero este no se queda seleccionado 
-  //este no tiene la variable isSavedPlaylist....
-  cambiarColor(id, color): void {
 
-    for (var i = 0; i < this.Listas.length; i++) {
-      let vandera: string = "0";
+  changeColor(item:Item): void 
+  {
 
-      if (this.Listas[i].id == id && this.Listas[i].color == "gris") {
-        this.Listas[i].color = "amarillo";
-        this.reproductor = true;
-        vandera = "1";
-      }
-      if (this.Listas[i].id != id && this.Listas[i].color == "gris") {
-        this.Listas[i].color = "gris";
-      }
-      if (this.Listas[i].id == id && this.Listas[i].color == "amarillo") {
-        if (vandera == "1") {
-          this.Listas[i].color = "amarillo";
-          this.reproductor = true;
-        } else {
-          this.Listas[i].color = "gris";
-          this.reproductor = false;
-        }
-      }
-      if (this.Listas[i].id != id && this.Listas[i].color == "amarillo") {
-        this.Listas[i].color = "gris";
-      }
-    }
-  }
-  /*Metodo del Browse para seleccionar y deseleccionar las filas
-  el arreglo tiene dos variables, color y isSavedPlaylist.. 
-  las cuales al dar click en una fila cambian de acuerdo a su estado...*/
-  cambiarColorAzul(id, color): void {
+    item.isSavedPlaylist=!item.isSavedPlaylist
+    item.color=item.isSavedPlaylist?"azulMenu":"gris"
 
-    //variable id es global es como un $scope en angualr 1 la puedes utilizar en la vista 
-    //la creo para saber cual es el id que tengo seleccionado cuando doy Click en una fila
-    this.id = id;
+    if(item.isSavedPlaylist)
+    this.Add(item)
+    else
+    this.Remove(item)
 
-    //Recorro el arreglo lista2 y voy chequeado el id y el color que tiene para cambiarlo o mantenerlo
-    //creo una variable Vandera la cual si esta en 1 es pq el color se acaba de cambiar a Azul
-    //por lo que no hay que cambiarlo el elemento isSavedPlaylist simplemente hace que mientras que este isSavedPlaylist se mantenga el color azul 
-    // y la palomita verde... Significando que esta seleccionado...
-    for (var i = 0; i < this.browseList.length; i++) {
-      let vandera: string = "0";
-
-      if (this.browseList[i].id == id && this.browseList[i].color == "gris") {
-        this.browseList[i].color = "azulMenu";
-        this.browseList[i].isSavedPlaylist = true;
-        vandera = "1";
-      }
-      if (this.browseList[i].id != id && this.browseList[i].color == "gris") {
-        this.browseList[i].color = "gris";
-      }
-      if (this.browseList[i].id == id && this.browseList[i].color == "azulMenu") {
-        if (vandera == "1") {
-          this.browseList[i].color = "azulMenu";
-        } else {
-          this.browseList[i].color = "gris";
-          this.id = "0";
-          this.browseList[i].isSavedPlaylist = false;
-        }
-      }
-      if (this.browseList[i].id != id && this.browseList[i].color == "azulMenu") {
-        this.browseList[i].color = "azulMenu";
-      }
-    }
   }
 
-  //Recorro el arreglo lista3 y voy chequeado el id y el color que tiene para cambiarlo o mantenerlo
-  //creo una variable Vandera la cual si esta en 1 es pq el color se acaba de cambiar a Azul
-  //por lo que no hay que cambiarlo el elemento isSavedPlaylist simplemente hace que mientras que este isSavedPlaylist se mantenga el color azul 
-  // y la palomita verde... Significando que esta seleccionado...
-  cambiarColorAzulSig(id, color): void {
+  changeColorWithPlayer(item:ItemPlayer):void
+  {
+     if(item.color=="gris")
+     {
+       item.color="amarillo"
+       this.reproductor=true
+     }
+     else
+     {
+       item.color="gris"
+       this.reproductor=false
+     }
 
-    //variable id es global es como un $scope en angualr 1 la puedes utilizar en la vista 
-    //la creo para saber cual es el id que tengo seleccionado cuando doy Click en una fila
-    this.id = id;
-
-    for (var i = 0; i < this.broweSubList.length; i++) {
-      let vandera: string = "0";
-
-      if (this.broweSubList[i].id == id && this.broweSubList[i].color == "gris") {
-        this.broweSubList[i].color = "azulMenu";
-        this.broweSubList[i].isSavedPlaylist = true;
-        vandera = "1";
-      }
-      if (this.broweSubList[i].id != id && this.broweSubList[i].color == "gris") {
-        this.broweSubList[i].color = "gris";
-      }
-      if (this.broweSubList[i].id == id && this.broweSubList[i].color == "azulMenu") {
-        if (vandera == "1") {
-          this.broweSubList[i].color = "azulMenu";
-        } else {
-          this.broweSubList[i].color = "gris";
-          this.id = "0";
-          this.broweSubList[i].isSavedPlaylist = false;
-        }
-      }
-      if (this.broweSubList[i].id != id && this.broweSubList[i].color == "azulMenu") {
-        this.broweSubList[i].color = "azulMenu";
-      }
-    }
   }
+
 }

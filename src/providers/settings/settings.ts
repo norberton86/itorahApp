@@ -103,6 +103,14 @@ export class Item{
   color:string
 }
 
+
+export class ItemPlayer{
+   id: number
+   nombre: string 
+   descripcion:string 
+   color: string 
+}
+
 export class Setting{
   wifiOnly: boolean
   downloadTime: string

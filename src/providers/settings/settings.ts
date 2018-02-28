@@ -3,6 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import { Injectable } from '@angular/core';
 import { AlertController } from 'ionic-angular';
+import { Subject } from "rxjs/Subject";
 
 /*
   Generated class for the SettingsProvider provider.
@@ -16,8 +17,10 @@ export class SettingsProvider {
   ruta: string
   header: Headers
 
+  private subjectItemsInTrue: Subject<string> = new Subject<string>();
+
   constructor(private http: Http, public alertCtrl: AlertController) {
-    this.ruta = "https://itorahid.3nom.com/app/";
+    this.ruta = "https://itorahapi.3nom.com/api/app/";
     this.header = new Headers({ "Content-Type": "application/json" });
   }
 
@@ -79,6 +82,14 @@ export class SettingsProvider {
     else
       return ""
   }
+
+  setItemsInTrue(items: string) {
+    this.subjectItemsInTrue.next(items)
+  }
+
+  getItemsInTrue(): Observable<string> {
+    return this.subjectItemsInTrue.asObservable();
+  }
 }
 
 export class Item{
@@ -86,6 +97,10 @@ export class Item{
   title:string
   isSavedPlaylist:boolean
   subList: Array<Item>
+
+  nombre:string
+  descripcion:string
+  color:string
 }
 
 export class Setting{

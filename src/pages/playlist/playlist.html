@@ -62,16 +62,16 @@
         </ion-row>
       </ion-grid>
   
-      <ion-card *ngFor="let lista of Listas2"> 
+      <ion-card *ngFor="let lista of browseList"> 
           <ion-item color={{lista.color}} style="padding-left: 5px" (click)="cambiarColorAzul(lista.id,lista.color)">
             <ion-row>
               <ion-col col-11>
-                <div [ngClass]="{letras_browse: lista.id!=id && lista.activo == 0, letras_browse_blanca: lista.activo}">{{lista.nombre}}</div>
+                <div [ngClass]="{letras_browse: lista.id!=id && lista.isSavedPlaylist == 0, letras_browse_blanca: lista.isSavedPlaylist}">{{lista.nombre}}</div>
                 <div class="letras_browse_desc">{{lista.descripcion}}</div>
               </ion-col>
               <ion-col col-1>
-                <ion-icon *ngIf="lista.id!=id && !lista.activo" name="add" style="margin-top: 10px; color: #082358; font-weight: bold"></ion-icon>
-                <ion-icon *ngIf="lista.activo" name="checkmark" style="margin-top: 10px; color: #32db64; font-weight: bold"></ion-icon>
+                <ion-icon *ngIf="lista.id!=id && !lista.isSavedPlaylist" name="add" style="margin-top: 10px; color: #082358; font-weight: bold"></ion-icon>
+                <ion-icon *ngIf="lista.isSavedPlaylist" name="checkmark" style="margin-top: 10px; color: #32db64; font-weight: bold"></ion-icon>
               </ion-col>
             </ion-row>
           </ion-item>
@@ -104,16 +104,16 @@
             </ion-row>
           </ion-grid>
       
-          <ion-card *ngFor="let lista of Listas3"> 
+          <ion-card *ngFor="let lista of broweSubList"> 
               <ion-item color={{lista.color}} style="padding-left: 5px" (click)="cambiarColorAzulSig(lista.id,lista.color)">
                 <ion-row>
                   <ion-col col-11>
-                    <div [ngClass]="{letras_browse: lista.id!=id && lista.activo == 0, letras_browse_blanca: lista.activo}">{{lista.nombre}}</div>
+                    <div [ngClass]="{letras_browse: lista.id!=id && lista.isSavedPlaylist == 0, letras_browse_blanca: lista.isSavedPlaylist}">{{lista.nombre}}</div>
                     <div class="letras_browse_desc">{{lista.descripcion}}</div>
                   </ion-col>
                   <ion-col col-1>
-                    <ion-icon *ngIf="lista.id!=id && !lista.activo" name="add" style="margin-top: 10px; color: #082358; font-weight: bold"></ion-icon>
-                    <ion-icon *ngIf="lista.activo" name="checkmark" style="margin-top: 10px; color: #32db64; font-weight: bold"></ion-icon>
+                    <ion-icon *ngIf="lista.id!=id && !lista.isSavedPlaylist" name="add" style="margin-top: 10px; color: #082358; font-weight: bold"></ion-icon>
+                    <ion-icon *ngIf="lista.isSavedPlaylist" name="checkmark" style="margin-top: 10px; color: #32db64; font-weight: bold"></ion-icon>
                   </ion-col>
                 </ion-row>
               </ion-item>

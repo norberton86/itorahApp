@@ -32,9 +32,9 @@ export class SettingsPage {
   InitializeForm() {
 
     var data = {
-      wifiOnly: 'true',
-      downloadTime: "2000-00-00T10:53:49-05:00",//new Date().toISOString(),
-      downloadDays: [[1,2,3]],
+      wifiOnly: 'false',
+      downloadTime: "2000-00-00T00:00:00-05:00",//new Date().toISOString(),
+      downloadDays: [[]],
     }
 
     this.form = this.fb.group(data);
@@ -42,7 +42,16 @@ export class SettingsPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SettingsPage');
+    
+    this.settingsProvider.getSettings().subscribe(setting=>{
+      
+          var now =new Date().toISOString()
 
+          var dateForForm="2000-00-00T"+setting.downloadTime+now.substr(now.length-6)
+
+          this.form.patchValue({wifiOnly:setting.wifiOnly,downloadTime:dateForForm,downloadDays:setting.downloadDays.split('')})
+          
+    },error=>{},()=>{})
 
   }
 

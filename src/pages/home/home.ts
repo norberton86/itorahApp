@@ -30,7 +30,7 @@ export class HomePage {
     });
 
 
-    this.platform.ready().then((ready) => {
+   /* this.platform.ready().then((ready) => {
 
       this.localNotifications.cancelAll().then(() => {                     //first cancell all notification
 
@@ -51,7 +51,7 @@ export class HomePage {
       })
 
 
-    })
+    })*/
   }
 
 

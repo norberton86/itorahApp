@@ -6,7 +6,7 @@ import {SettingsProvider,Setting} from '../../providers/settings/settings';
 import { Network } from '@ionic-native/network';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 
-
+import * as moment from 'moment';
 
 /**
  * Generated class for the SettingsPage page.
@@ -24,8 +24,6 @@ export class SettingsPage {
 
   form: FormGroup;
   requesting:boolean=false
-
-  savedPlaylist:string="1,2"
 
   constructor(private localNotifications:LocalNotifications,public navCtrl: NavController, public navParams: NavParams,private fb: FormBuilder,private settingsProvider:SettingsProvider,private network:Network) {
      this.InitializeForm()
@@ -48,17 +46,15 @@ export class SettingsPage {
 
   }
 
-  ScheduleTask()
+  ScheduleTask(_connectionType:string,_url:string)
   {
     
-
-
     this.localNotifications.schedule({
       id:1,
-      title:'Attention',
-      text:'AAAAAAAA',
+      title:'Downloading',
+      text:'',
       at:(new Date().getTime()+10000),
-      data:{myData:"Miiii Dataaaaaa"}
+      data:{connectionType:_connectionType,url:_url}
     })
   }
 

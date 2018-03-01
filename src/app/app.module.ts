@@ -21,6 +21,8 @@ import { HttpModule } from '@angular/http';
 import { Network } from '@ionic-native/network';
 import { SettingsProvider } from '../providers/settings/settings';
 
+import { LocalNotifications } from '@ionic-native/local-notifications';
+
 
 @NgModule({
   declarations: [
@@ -46,6 +48,7 @@ import { SettingsProvider } from '../providers/settings/settings';
     ListPage
   ],
   providers: [
+    LocalNotifications,
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},

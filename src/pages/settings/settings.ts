@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams ,Platform} from 'ionic-angular';
+import { IonicPage, NavController, NavParams} from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import {SettingsProvider,Setting} from '../../providers/settings/settings';
 
 import { Network } from '@ionic-native/network';
+import { LocalNotifications } from '@ionic-native/local-notifications';
 
 
 
@@ -26,7 +27,7 @@ export class SettingsPage {
 
   savedPlaylist:string="1,2"
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,private fb: FormBuilder,private settingsProvider:SettingsProvider, private platform: Platform,private network:Network) {
+  constructor(private localNotifications:LocalNotifications,public navCtrl: NavController, public navParams: NavParams,private fb: FormBuilder,private settingsProvider:SettingsProvider,private network:Network) {
      this.InitializeForm()
   }
 
@@ -44,27 +45,25 @@ export class SettingsPage {
   ionViewDidLoad() {
     console.log('ionViewDidLoad SettingsPage');
 
-   
+
   }
 
-  checkNetwork() {
-         this.platform.ready().then(() => {
+  ScheduleTask()
+  {
+    
 
-           if( this.network.type=='wifi') //download only with wifi 
-           {
 
-           }
-           else  //downlaod always
-           {
-
-           }
-       
-    });
+    this.localNotifications.schedule({
+      id:1,
+      title:'Attention',
+      text:'AAAAAAAA',
+      at:(new Date().getTime()+10000),
+      data:{myData:"Miiii Dataaaaaa"}
+    })
   }
-
-  
 
 }
+
 
 
 Date.prototype.toISOString = function() {

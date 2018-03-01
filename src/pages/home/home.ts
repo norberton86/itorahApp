@@ -24,14 +24,10 @@ export class HomePage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams,private loginProvider:LoginProvider,private network: Network) {
 
-     /*this.disconnectSubscription = this.network.onDisconnect().subscribe(() => {
+     this.disconnectSubscription = this.network.onDisconnect().subscribe(() => {
         this.goNoConnection()
-     });*/
+     });
      
-    /* let self=this
-     setTimeout(function(){
-        self.goNoConnection()
-     },5000)*/
   }
 
 

@@ -72,7 +72,7 @@
 
   <ion-row style="margin-top: 40px; text-align: center">
     <ion-col col-12 style=" padding-left: 0;">
-      <button ion-button color="secondary" style="width: 50%; padding: 25px" (click)="ScheduleTask()">APPLY</button>
+      <button ion-button color="secondary" style="width: 50%; padding: 25px" (click)="ScheduleTask()"> <label *ngIf="!requesting">APPLY</label>   <ion-spinner *ngIf="requesting"></ion-spinner> </button>
     </ion-col>
   </ion-row>
 </ion-content>

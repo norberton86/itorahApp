@@ -127,6 +127,7 @@ export class PlaylistPage {
         }
 
         this.favorites.push(newOne) //add to the favorite list
+        this.SaveOnPhone()
         
       }
   }
@@ -135,6 +136,7 @@ export class PlaylistPage {
   {
     var index =this.favorites.findIndex(i=>i.id==item.id)
     this.favorites.splice(index, 1) //remove from favorite list
+    this.SaveOnPhone()
 
   }
 
@@ -149,11 +151,11 @@ export class PlaylistPage {
 
       this.InitializeList(this.broweSubList, item.subList)
 
-    })
+    },error=>{},()=>{})
+
+    //load the favorite list
+    this.favorites= JSON.parse(localStorage.getItem('favorites'))
   }
-
-
-
 
   InitializeList(list: Array<Item>, source: Array<Item>) {
     source.forEach(element => {
@@ -164,12 +166,14 @@ export class PlaylistPage {
           item.color = element.isSavedPlaylist ? "azulMenu" : "gris"
           item.isSavedPlaylist = element.isSavedPlaylist
           
-          if(item.isSavedPlaylist)
-          this.Add(item)
+          if(localStorage.getItem('firsTime')=='true' &&  item.isSavedPlaylist)  //only the first time when the app is loaded we add the items from the server instead to loas locally
+           this.Add(item)
         }
       })
 
     });
+
+    localStorage.setItem('firsTime','false')  //remove the first time condition
   }
 
   //Metodo que te envia a la pagina Settings
@@ -239,5 +243,9 @@ export class PlaylistPage {
      }
 
   }
-
+  
+  SaveOnPhone()
+  {
+    localStorage.setItem('favorites',JSON.stringify(this.favorites))
+  }
 }

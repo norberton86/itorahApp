@@ -30,17 +30,20 @@ export class HomePage {
     });
 
 
-   /* this.platform.ready().then((ready) => {
+    this.platform.ready().then((ready) => {
 
       this.localNotifications.cancelAll().then(() => {                     //first cancell all notification
 
         this.localNotifications.on('trigger', (notification, state) => {
 
-          //notification.data
+          let data=JSON.parse(notification.data)
 
-          if (this.network.type == 'wifi') //download only with wifi 
+          //data.ids
+          //data.connectionType
+           
+          if (this.network.type == 'wifi' && data.connectionType==true) //download only with wifi 
           {
-
+             return
           }
           else  //downlaod always
           {
@@ -50,8 +53,13 @@ export class HomePage {
         })
       })
 
+    })
+  }
 
-    })*/
+
+  Download(url)
+  {
+    
   }
 
 

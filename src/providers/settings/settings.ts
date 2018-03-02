@@ -58,7 +58,8 @@ export class SettingsProvider {
   public setSettings(data: Setting): Observable<any> {
     let h = new Headers();
     h.append('Content-Type', 'application/json');
-
+    h.append('Authorization', 'bearer ' + this.getToken())
+    
     return this.http.post(this.ruta+"settings", data, { headers: h }).map(
       (response) => {
         return response.toString();

@@ -140,7 +140,7 @@ export class PlaylistPage {
     }
   }
 
-  IsSyncPosible() {
+  IsSyncPosible():boolean {
     return this.favorites.findIndex(i => i.url == '') >= 0
   }
 

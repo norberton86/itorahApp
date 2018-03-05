@@ -40,6 +40,16 @@ export class SettingsProvider {
   }
 
 
+  public getURL(ids:string): Observable<Array<URL>> {
+
+    return this.http.get(this.ruta+"content?Playlists="+ids).map(
+      (response) => {
+        let body = response.json();
+        return body;
+      }
+    )
+  }
+
   public getSettings(): Observable<Setting> {
 
     let h = new Headers();
@@ -117,4 +127,9 @@ export class Setting{
   downloadTime: string
   downloadDays:string
   savedPlaylist:string
+}
+
+export class URL{
+  PlaylistID: number
+  AudioUrl:string
 }

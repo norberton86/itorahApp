@@ -23,6 +23,11 @@ import { SettingsProvider } from '../providers/settings/settings';
 
 import { LocalNotifications } from '@ionic-native/local-notifications';
 
+import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
+import { File } from '@ionic-native/file';
+
+import { Toast } from '@ionic-native/toast';
+
 
 @NgModule({
   declarations: [
@@ -48,6 +53,8 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
     ListPage
   ],
   providers: [
+    FileTransfer,Toast,
+    File,
     LocalNotifications,
     StatusBar,
     SplashScreen,

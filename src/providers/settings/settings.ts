@@ -4,6 +4,7 @@ import 'rxjs/add/operator/map';
 import { Injectable } from '@angular/core';
 import { AlertController } from 'ionic-angular';
 import { Subject } from "rxjs/Subject";
+import { Toast } from '@ionic-native/toast';
 
 /*
   Generated class for the SettingsProvider provider.
@@ -19,7 +20,7 @@ export class SettingsProvider {
 
   private subjectItemsInTrue: Subject<string> = new Subject<string>();
 
-  constructor(private http: Http, public alertCtrl: AlertController) {
+  constructor(private http: Http, public alertCtrl: AlertController,private toast:Toast) {
     this.ruta = "https://itorahapi.3nom.com/api/app/";
     this.header = new Headers({ "Content-Type": "application/json" });
   }
@@ -86,6 +87,14 @@ export class SettingsProvider {
     alert.present();
   }
 
+  ShowToast(message: string) {
+    this.toast.show(message, '10000', 'center').subscribe(
+      toast => {
+        console.log(toast);
+      }
+    );
+  }
+
   getToken(): string {
     if (localStorage.getItem('userItorah') != null && localStorage.getItem('userItorah') != "") {
       return JSON.parse(localStorage.getItem('userItorah')).token
@@ -120,6 +129,7 @@ export class ItemPlayer{
    nombre: string 
    descripcion:string 
    color: string 
+   url:string
 }
 
 export class Setting{

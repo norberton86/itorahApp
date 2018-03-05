@@ -2,9 +2,10 @@ import { HomePage } from './../home/home';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { SettingsPage } from '../settings/settings'
-
-import { SettingsProvider, Item,ItemPlayer } from '../../providers/settings/settings';
-
+import { Media, MediaObject } from '@ionic-native/media';
+import { SettingsProvider, Item, ItemPlayer } from '../../providers/settings/settings';
+import { LoginProvider } from '../../providers/login/login';
+import { File } from '@ionic-native/file';
 /**
  * Generated class for the PlaylistPage page.
  *
@@ -20,7 +21,7 @@ import { SettingsProvider, Item,ItemPlayer } from '../../providers/settings/sett
 export class PlaylistPage {
 
   // Arreglo de la lista 1 
-  favorites:Array<ItemPlayer> = [];
+  favorites: Array<ItemPlayer> = [];
 
   // Arreglo de la lista 2
   browseList: Array<Item> = [
@@ -76,9 +77,9 @@ export class PlaylistPage {
   content_play: boolean = true;
   positivo: boolean = true;//Vamriable para activar y desactivar los botones (playlist y browse)
   content_sig: boolean = false;
-  
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private settingsProvider: SettingsProvider) {
+
+  constructor(public navCtrl: NavController, public navParams: NavParams, private settingsProvider: SettingsProvider, private media: Media, private file: File,private loginProvider:LoginProvider) {
 
     this.settingsProvider.getItemsInTrue().subscribe(items => {  //to refresh the items
 
@@ -87,54 +88,50 @@ export class PlaylistPage {
 
 
 
-  RemoveinFavorites(item:ItemPlayer)
-  {
+  RemoveinFavorites(item: ItemPlayer) {
 
-     var element=this.browseList.find(i=>i.id==item.id)
-     
-     if(element!=undefined && element!=null)  //if is in the first list
-     {
+    var element = this.browseList.find(i => i.id == item.id)
+
+    if (element != undefined && element != null)  //if is in the first list
+    {
       this.changeColor(element)
-     }
-     else{
-       element=this.broweSubList.find(i=>i.id==item.id) ////if is in the second list
-       
-       if(element!=undefined && element!=null)
-       this.changeColor(element)
-     }
-     
+    }
+    else {
+      element = this.broweSubList.find(i => i.id == item.id) ////if is in the second list
+
+      if (element != undefined && element != null)
+        this.changeColor(element)
+    }
+
   }
 
-  Add(item:Item)
-  {
-      if(this.favorites.findIndex(i=>i.id==item.id)>=0)  //if already exits
-        return
-      else
+  Add(item: Item) {
+    if (this.favorites.findIndex(i => i.id == item.id) >= 0)  //if already exits
+      return
+    else {
+      var newOne = new ItemPlayer()
+      newOne.id = item.id
+      newOne.color = "gris"
+
+      if (item.nombre.indexOf("by") < 0)  //if it is the browlist
       {
-        var newOne = new ItemPlayer()
-        newOne.id=item.id
-        newOne.color="gris"
-        
-        if(item.nombre.indexOf("by")<0)  //if it is the browlist
-        {
-          newOne.nombre=item.nombre
-          newOne.descripcion=item.descripcion
-        }
-        else                          //else it is the subBrowseList
-        {
-          newOne.nombre=item.nombre.split(" by ")[0]
-          newOne.descripcion="by "+item.nombre.split(" by ")[1]
-        }
-
-        this.favorites.push(newOne) //add to the favorite list
-        this.SaveOnPhone()
-        
+        newOne.nombre = item.nombre
+        newOne.descripcion = item.descripcion
       }
+      else                          //else it is the subBrowseList
+      {
+        newOne.nombre = item.nombre.split(" by ")[0]
+        newOne.descripcion = "by " + item.nombre.split(" by ")[1]
+      }
+
+      this.favorites.push(newOne) //add to the favorite list
+      this.SaveOnPhone()
+
+    }
   }
 
-  Remove(item:Item)
-  {
-    var index =this.favorites.findIndex(i=>i.id==item.id)
+  Remove(item: Item) {
+    var index = this.favorites.findIndex(i => i.id == item.id)
     this.favorites.splice(index, 1) //remove from favorite list
     this.SaveOnPhone()
 
@@ -151,11 +148,19 @@ export class PlaylistPage {
 
       this.InitializeList(this.broweSubList, item.subList)
 
-    },error=>{},()=>{})
+    }, error => { }, () => { })
 
     //load the favorite list
-    this.favorites= JSON.parse(localStorage.getItem('favorites'))
+    this.favorites = JSON.parse(localStorage.getItem('favorites'))
+
+    if (this.loginProvider.getToken() != '')  //to load the initials of the user's name
+    {
+      this.name = JSON.parse(localStorage.getItem('userItorah')).name;
+      this.name = this.name.split(" ")[0][0] + this.name.split(" ")[1][0]
+    }
   }
+
+  name:string=''
 
   InitializeList(list: Array<Item>, source: Array<Item>) {
     source.forEach(element => {
@@ -165,15 +170,15 @@ export class PlaylistPage {
         if (element.id == item.id) {
           item.color = element.isSavedPlaylist ? "azulMenu" : "gris"
           item.isSavedPlaylist = element.isSavedPlaylist
-          
-          if(localStorage.getItem('firsTime')=='true' &&  item.isSavedPlaylist)  //only the first time when the app is loaded we add the items from the server instead to loas locally
-           this.Add(item)
+
+          if (localStorage.getItem('firsTime') == 'true' && item.isSavedPlaylist)  //only the first time when the app is loaded we add the items from the server instead to loas locally
+            this.Add(item)
         }
       })
 
     });
 
-    localStorage.setItem('firsTime','false')  //remove the first time condition
+    localStorage.setItem('firsTime', 'false')  //remove the first time condition
   }
 
   //Metodo que te envia a la pagina Settings
@@ -183,7 +188,7 @@ export class PlaylistPage {
 
   //Metodo que te envia a la pagina principal la que tiene el PaginaWeb
   goHome(): void {
-    this.navCtrl.push(HomePage);
+    this.navCtrl.pop();
   }
 
   //cambia las variables deacuedo a la vista que queremos mostrar al dar click en los botones PlayList y Browse
@@ -216,36 +221,87 @@ export class PlaylistPage {
   }
 
 
-  changeColor(item:Item): void 
-  {
+  changeColor(item: Item): void {
 
-    item.isSavedPlaylist=!item.isSavedPlaylist
-    item.color=item.isSavedPlaylist?"azulMenu":"gris"
+    item.isSavedPlaylist = !item.isSavedPlaylist
+    item.color = item.isSavedPlaylist ? "azulMenu" : "gris"
 
-    if(item.isSavedPlaylist)
-    this.Add(item)
+    if (item.isSavedPlaylist)
+      this.Add(item)
     else
-    this.Remove(item)
+      this.Remove(item)
 
   }
 
-  changeColorWithPlayer(item:ItemPlayer):void
+  changeColorWithPlayer(item: ItemPlayer): void {
+    if (item.color == "gris") {
+      item.color = "amarillo"
+      this.reproductor = true
+    }
+    else {
+      item.color = "gris"
+      this.reproductor = false
+    }
+
+    this.Play(item.id)  //try to play/stop the player
+
+  }
+
+  SaveOnPhone() {
+    localStorage.setItem('favorites', JSON.stringify(this.favorites))
+  }
+
+  myfile: MediaObject
+
+  playing: boolean = false
+
+  Play(id: number)  //name is like: '3427.mp3'
   {
-     if(item.color=="gris")
-     {
-       item.color="amarillo"
-       this.reproductor=true
-     }
-     else
-     {
-       item.color="gris"
-       this.reproductor=false
-     }
+    if (!this.playing) {
+
+      var favoritesTemp = new Array<ItemPlayer>()
+      favoritesTemp = JSON.parse(localStorage.getItem('favorites'))
+
+      var url = ''
+
+      favoritesTemp.forEach(element => {  //find the url for this element
+        if (element.id == id) {
+          url = element.url
+        }
+      });
+
+      if (url != '') {
+        try {
+          this.myfile = this.media.create(this.file.externalDataDirectory + url); //load the file
+          this.myfile.play();
+          this.playing = true                                                      //play the file
+        }
+        catch (e) {
+          this.settingsProvider.ShowToast(e)
+        }
+      }
+      else {
+        this.settingsProvider.ShowAlert("Oops", "This file is not available")
+      }
+    }
+    else {
+      if (this.myfile != undefined && this.myfile != null) {
+      
+        try {
+          this.myfile.stop()
+          this.playing = false
+        }
+        catch (e)
+        {
+          this.settingsProvider.ShowToast(e)
+        }
+
+      }
+    }
+
 
   }
-  
-  SaveOnPhone()
-  {
-    localStorage.setItem('favorites',JSON.stringify(this.favorites))
-  }
+
+
+
 }

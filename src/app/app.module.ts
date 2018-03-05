@@ -28,6 +28,9 @@ import { File } from '@ionic-native/file';
 
 import { Toast } from '@ionic-native/toast';
 
+import { NativeAudio } from '@ionic-native/native-audio';
+import { Media, MediaObject } from '@ionic-native/media';
+
 
 @NgModule({
   declarations: [
@@ -53,7 +56,7 @@ import { Toast } from '@ionic-native/toast';
     ListPage
   ],
   providers: [
-    FileTransfer,Toast,
+    FileTransfer,Toast,NativeAudio,Media,
     File,
     LocalNotifications,
     StatusBar,

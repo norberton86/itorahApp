@@ -3,7 +3,7 @@ import { NoConnectionPage } from './../no-connection/no-connection';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import { LoginProvider } from '../../providers/login/login';
-import { SettingsProvider,URL } from '../../providers/settings/settings';
+import { SettingsProvider, URL, ItemPlayer } from '../../providers/settings/settings';
 
 import { Network } from '@ionic-native/network';
 import { LocalNotifications } from "@ionic-native/local-notifications";
@@ -12,6 +12,9 @@ import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-nati
 import { File } from '@ionic-native/file';
 
 import { Toast } from '@ionic-native/toast';
+
+
+
 
 /**
  * Generated class for the HomePage page.
@@ -49,22 +52,24 @@ export class HomePage {
 
           let data = JSON.parse(notification.data)
 
-          if (this.network.type == 'wifi' && data.connectionType==true) //download only with wifi 
+          if (this.network.type == 'wifi' && data.connectionType == true) //download only with wifi 
           {
-             this.ShowToast('Please change your settings to allow download with any internet connection type')
+            this.settingsProvider.ShowToast('Please change your settings to allow download with any internet connection type')
           }
           else  //downlaod always
           {
-            data.ids.split(',').array.forEach(element => {
-              
-              this.settingsProvider.getURL(data.ids).subscribe(result=>{
-                  result.forEach(url=>{
-                    this.download(url)  
-                  })
+
+            this.settingsProvider.getURL(data.ids).subscribe(result => {
+              result.forEach(url => {
+                if (this.CheckIfExist(url.PlaylistID))  //if is still on favorites
+                {
+                  
+                  this.download(url)
+                }
+                  
               })
-              
-            });
-                        
+            })
+
           }
 
         })
@@ -73,32 +78,46 @@ export class HomePage {
     })
   }
 
-
-  ShowToast(message: string) {
-    this.toast.show(message, '10000', 'center').subscribe(
-      toast => {
-        console.log(toast);
-      }
-    );
-  }
-
-
   download(url: URL) {
 
     var arr = url.AudioUrl.split('/')
 
     this.fileTransfer.download(url.AudioUrl, this.file.externalDataDirectory + arr[arr.length - 1]).then((entry) => {
-      
-      this.ShowToast('Download complete from Itorah')
-      //entry.toURL()
+
+        this.Update(url.PlaylistID,arr[arr.length - 1])
+        this.settingsProvider.ShowToast('Downloaded')
     },
-    (error) => {
-        this.ShowToast('Error trying to download the lectures')
-    });
+      (error) => {
+        this.settingsProvider.ShowToast('Error trying to download the lectures')
+      });
   }
 
-  
 
+  CheckIfExist(id: number) {
+    var data = new Array<ItemPlayer>()
+    data = JSON.parse(localStorage.getItem('favorites'))
+
+    var exists = false
+    data.forEach(element => {
+      if (element.id == id)
+        exists = true
+    });
+
+    return exists
+  }
+
+  Update(id:number,name:string)
+  {
+    var data = new Array<ItemPlayer>()
+    data = JSON.parse(localStorage.getItem('favorites'))
+
+    data.forEach(element=>{  
+      if(element.id==id)
+        element.url=name //update
+    })
+
+    localStorage.setItem('favorites',JSON.stringify(data))  //save
+  }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad HomePage');

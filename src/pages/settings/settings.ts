@@ -5,8 +5,10 @@ import { SettingsProvider, Setting } from '../../providers/settings/settings';
 
 import { Network } from '@ionic-native/network';
 import { LocalNotifications } from '@ionic-native/local-notifications';
-
+import { NativeAudio } from '@ionic-native/native-audio';
+import { Toast } from '@ionic-native/toast';
 import * as moment from 'moment';
+
 
 /**
  * Generated class for the SettingsPage page.
@@ -25,7 +27,7 @@ export class SettingsPage {
   form: FormGroup;
   requesting: boolean = false
 
-  constructor(private localNotifications: LocalNotifications, public navCtrl: NavController, public navParams: NavParams, private fb: FormBuilder, private settingsProvider: SettingsProvider, private network: Network) {
+  constructor(private toast: Toast, private nativeAudio: NativeAudio,private localNotifications: LocalNotifications, public navCtrl: NavController, public navParams: NavParams, private fb: FormBuilder, private settingsProvider: SettingsProvider, private network: Network) {
     this.InitializeForm()
   }
 
@@ -59,8 +61,10 @@ export class SettingsPage {
 
   }
 
-  ScheduleTask() //_connectionType:string,_url:string
+
+  ScheduleTask() 
   {
+
     this.Save()
   }
 

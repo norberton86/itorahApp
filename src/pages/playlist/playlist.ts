@@ -132,7 +132,7 @@ export class PlaylistPage {
         newOne.descripcion = "by " + item.nombre.split(" by ")[1]
       }
 
-      newOne.url=''
+      newOne.url = ''
 
       this.favorites.push(newOne) //add to the favorite list
       this.SaveOnPhone()
@@ -140,9 +140,8 @@ export class PlaylistPage {
     }
   }
 
-  IsSyncPosible()
-  {
-    return this.favorites.findIndex(i=>i.url=='')>=0
+  IsSyncPosible() {
+    return this.favorites.findIndex(i => i.url == '') >= 0
   }
 
   Remove(item: Item) {
@@ -155,18 +154,27 @@ export class PlaylistPage {
   ionViewDidLoad() {
     console.log('ionViewDidLoad PlaylistPage');
 
-    this.settingsProvider.getItems().subscribe(respond => {
+    if (localStorage.getItem('firsTime') == 'true')  //only the first time when the app is loaded we add the items from the server instead to load locally
+    {
+      this.settingsProvider.getItems().subscribe(respond => {
 
-      this.InitializeList(this.browseList, respond)
+        this.InitializeList(this.browseList, respond)
 
-      var item = respond.find(i => i.title == "Parasha of the Week")
+        var item = respond.find(i => i.title == "Parasha of the Week")
 
-      this.InitializeList(this.broweSubList, item.subList)
+        this.InitializeList(this.broweSubList, item.subList)
 
-    }, error => { }, () => { })
+        localStorage.setItem('firsTime', 'false')  //remove the first time condition
+      }, error => {localStorage.setItem('firsTime', 'false')  }, () => { })
+    }
+    else
+    {
+       this.favorites = JSON.parse(localStorage.getItem('favorites'))
+       
+       this.InitializeListLocalData(this.browseList)
+       this.InitializeListLocalData(this.broweSubList)
+    }
 
-    //load the favorite list
-    this.favorites = JSON.parse(localStorage.getItem('favorites'))
 
     if (this.loginProvider.getToken() != '')  //to load the initials of the user's name
     {
@@ -177,6 +185,26 @@ export class PlaylistPage {
 
   name: string = ''
 
+
+  InitializeListLocalData(list: Array<Item>) {
+
+      list.forEach(item => {
+
+        if(this.favorites.findIndex(s=>s.id==item.id)>=0)
+        {
+           item.color = "azulMenu"
+           item.isSavedPlaylist = true
+        }
+        else
+        {
+          item.color =  "gris"
+          item.isSavedPlaylist = false
+        }
+
+      })
+
+  }
+
   InitializeList(list: Array<Item>, source: Array<Item>) {
     source.forEach(element => {
 
@@ -186,14 +214,13 @@ export class PlaylistPage {
           item.color = element.isSavedPlaylist ? "azulMenu" : "gris"
           item.isSavedPlaylist = element.isSavedPlaylist
 
-          if (localStorage.getItem('firsTime') == 'true' && item.isSavedPlaylist)  //only the first time when the app is loaded we add the items from the server instead to loas locally
+          if (item.isSavedPlaylist)  //if was choosen 
             this.Add(item)
         }
       })
 
     });
 
-    localStorage.setItem('firsTime', 'false')  //remove the first time condition
   }
 
   //Metodo que te envia a la pagina Settings
@@ -346,8 +373,8 @@ export class PlaylistPage {
 
   Sync() {
 
-    if(this.requesting)
-    return
+    if (this.requesting)
+      return
 
     var favoritesTemp = new Array<ItemPlayer>()
     favoritesTemp = JSON.parse(localStorage.getItem('favorites'))

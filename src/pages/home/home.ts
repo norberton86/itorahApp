@@ -1,5 +1,6 @@
 import { SettingsPage } from './../settings/settings';
 import { NoConnectionPage } from './../no-connection/no-connection';
+import { LoginPage } from './../login/login';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import { LoginProvider } from '../../providers/login/login';
@@ -12,6 +13,8 @@ import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-nati
 import { File } from '@ionic-native/file';
 
 import { Toast } from '@ionic-native/toast';
+
+import { AlertController } from 'ionic-angular';
 
 
 
@@ -35,13 +38,13 @@ export class HomePage {
 
 
   fileTransfer: FileTransferObject
-  constructor(private toast: Toast, private settingsProvider: SettingsProvider, private file: File, private transfer: FileTransfer, private localNotifications: LocalNotifications, public navCtrl: NavController, public navParams: NavParams, private loginProvider: LoginProvider, private network: Network, private platform: Platform) {
+  constructor(private alertCtrl: AlertController, private toast: Toast, private settingsProvider: SettingsProvider, private file: File, private transfer: FileTransfer, private localNotifications: LocalNotifications, public navCtrl: NavController, public navParams: NavParams, private loginProvider: LoginProvider, private network: Network, private platform: Platform) {
 
     this.disconnectSubscription = this.network.onDisconnect().subscribe(() => {
       this.goNoConnection()
     });
 
-
+    /*
     this.platform.ready().then((ready) => {
 
       this.fileTransfer = this.transfer.create();
@@ -63,10 +66,10 @@ export class HomePage {
               result.forEach(url => {
                 if (this.CheckIfExist(url.PlaylistID))  //if is still on favorites
                 {
-                  
+
                   this.download(url)
                 }
-                  
+
               })
             })
 
@@ -75,7 +78,7 @@ export class HomePage {
         })
       })
 
-    })
+    })*/
   }
 
   download(url: URL) {
@@ -84,8 +87,8 @@ export class HomePage {
 
     this.fileTransfer.download(url.AudioUrl, this.file.externalDataDirectory + arr[arr.length - 1]).then((entry) => {
 
-        this.Update(url.PlaylistID,arr[arr.length - 1])
-        this.settingsProvider.ShowToast('Downloaded')
+      this.Update(url.PlaylistID, arr[arr.length - 1])
+      this.settingsProvider.ShowToast('Downloaded')
     },
       (error) => {
         this.settingsProvider.ShowToast('Error trying to download the lectures')
@@ -106,17 +109,16 @@ export class HomePage {
     return exists
   }
 
-  Update(id:number,name:string)
-  {
+  Update(id: number, name: string) {
     var data = new Array<ItemPlayer>()
     data = JSON.parse(localStorage.getItem('favorites'))
 
-    data.forEach(element=>{  
-      if(element.id==id)
-        element.url=name //update
+    data.forEach(element => {
+      if (element.id == id)
+        element.url = name //update
     })
 
-    localStorage.setItem('favorites',JSON.stringify(data))  //save
+    localStorage.setItem('favorites', JSON.stringify(data))  //save
   }
 
   ionViewDidLoad() {
@@ -127,6 +129,50 @@ export class HomePage {
       this.name = JSON.parse(localStorage.getItem('userItorah')).name;
       this.name = this.name.split(" ")[0][0] + this.name.split(" ")[1][0]
     }
+  }
+
+  ionViewDidEnter()
+  {
+    if (this.loginProvider.getToken()=='') {
+        this.AutoPop()
+    }
+  }
+
+  Logout() {
+
+
+    let alert = this.alertCtrl.create({
+      title: 'Confirm',
+      message: 'Do you want to logout?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+
+          }
+        },
+        {
+          text: 'Yes',
+          handler: () => {
+
+            localStorage.removeItem('userItorah')
+            this.AutoPop()
+
+          }
+        }
+      ]
+    });
+    alert.present();
+
+
+  }
+
+  AutoPop() {
+    this.navCtrl.push(LoginPage).then(() => {                 //remove the current page from the stack
+      const startIndex = this.navCtrl.getActive().index - 1;
+      this.navCtrl.remove(startIndex, 1);
+    });
   }
 
   goNoConnection(): void {

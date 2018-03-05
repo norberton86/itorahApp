@@ -6,6 +6,8 @@ import { Media, MediaObject } from '@ionic-native/media';
 import { SettingsProvider, Item, ItemPlayer } from '../../providers/settings/settings';
 import { LoginProvider } from '../../providers/login/login';
 import { File } from '@ionic-native/file';
+
+import { AlertController } from 'ionic-angular';
 /**
  * Generated class for the PlaylistPage page.
  *
@@ -79,7 +81,7 @@ export class PlaylistPage {
   content_sig: boolean = false;
 
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private settingsProvider: SettingsProvider, private media: Media, private file: File,private loginProvider:LoginProvider) {
+  constructor(private alertCtrl: AlertController,public navCtrl: NavController, public navParams: NavParams, private settingsProvider: SettingsProvider, private media: Media, private file: File,private loginProvider:LoginProvider) {
 
     this.settingsProvider.getItemsInTrue().subscribe(items => {  //to refresh the items
 
@@ -302,6 +304,32 @@ export class PlaylistPage {
 
   }
 
+  Logout() {
 
+    let alert = this.alertCtrl.create({
+      title: 'Confirm',
+      message: 'Do you want to logout?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+
+          }
+        },
+        {
+          text: 'Yes',
+          handler: () => {
+
+            localStorage.removeItem('userItorah')
+            this.navCtrl.pop()
+
+          }
+        }
+      ]
+    });
+    alert.present();
+
+  }
 
 }

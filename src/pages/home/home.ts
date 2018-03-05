@@ -47,38 +47,36 @@ export class HomePage {
     /*
     this.platform.ready().then((ready) => {
 
-      this.fileTransfer = this.transfer.create();
+    this.fileTransfer = this.transfer.create();
 
-      this.localNotifications.cancelAll().then(() => {                     //first cancell all notification
+    this.localNotifications.on('trigger', (notification, state) => {
 
-        this.localNotifications.on('trigger', (notification, state) => {
+      let data = JSON.parse(notification.data)
 
-          let data = JSON.parse(notification.data)
+      if (this.network.type == 'wifi' && data.connectionType == true) //download only with wifi 
+      {
+        this.settingsProvider.ShowToast('Please change your settings to allow download with any internet connection type')
+      }
+      else  //downlaod always
+      {
 
-          if (this.network.type == 'wifi' && data.connectionType == true) //download only with wifi 
-          {
-            this.settingsProvider.ShowToast('Please change your settings to allow download with any internet connection type')
-          }
-          else  //downlaod always
-          {
+        this.settingsProvider.getURL(data.ids).subscribe(result => {
+          result.forEach(url => {
+            if (this.settingsProvider.CheckIfExist(url.PlaylistID))  //if is still on favorites
+            {
 
-            this.settingsProvider.getURL(data.ids).subscribe(result => {
-              result.forEach(url => {
-                if (this.CheckIfExist(url.PlaylistID))  //if is still on favorites
-                {
+              this.download(url)
+            }
 
-                  this.download(url)
-                }
-
-              })
-            })
-
-          }
-
+          })
         })
-      })
 
-    })*/
+      }
+
+    })
+
+
+    }) */
   }
 
   download(url: URL) {
@@ -87,7 +85,7 @@ export class HomePage {
 
     this.fileTransfer.download(url.AudioUrl, this.file.externalDataDirectory + arr[arr.length - 1]).then((entry) => {
 
-      this.Update(url.PlaylistID, arr[arr.length - 1])
+      this.settingsProvider.Update(url.PlaylistID, arr[arr.length - 1])
       this.settingsProvider.ShowToast('Downloaded')
     },
       (error) => {
@@ -96,30 +94,7 @@ export class HomePage {
   }
 
 
-  CheckIfExist(id: number) {
-    var data = new Array<ItemPlayer>()
-    data = JSON.parse(localStorage.getItem('favorites'))
 
-    var exists = false
-    data.forEach(element => {
-      if (element.id == id)
-        exists = true
-    });
-
-    return exists
-  }
-
-  Update(id: number, name: string) {
-    var data = new Array<ItemPlayer>()
-    data = JSON.parse(localStorage.getItem('favorites'))
-
-    data.forEach(element => {
-      if (element.id == id)
-        element.url = name //update
-    })
-
-    localStorage.setItem('favorites', JSON.stringify(data))  //save
-  }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad HomePage');
@@ -131,10 +106,9 @@ export class HomePage {
     }
   }
 
-  ionViewDidEnter()
-  {
-    if (this.loginProvider.getToken()=='') {
-        this.AutoPop()
+  ionViewDidEnter() {
+    if (this.loginProvider.getToken() == '') {
+      this.AutoPop()
     }
   }
 

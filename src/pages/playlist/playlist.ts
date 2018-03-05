@@ -3,11 +3,14 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { SettingsPage } from '../settings/settings'
 import { Media, MediaObject } from '@ionic-native/media';
-import { SettingsProvider, Item, ItemPlayer } from '../../providers/settings/settings';
+import { SettingsProvider, Item, ItemPlayer, URL } from '../../providers/settings/settings';
 import { LoginProvider } from '../../providers/login/login';
 import { File } from '@ionic-native/file';
 
 import { AlertController } from 'ionic-angular';
+
+import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
+
 /**
  * Generated class for the PlaylistPage page.
  *
@@ -80,12 +83,15 @@ export class PlaylistPage {
   positivo: boolean = true;//Vamriable para activar y desactivar los botones (playlist y browse)
   content_sig: boolean = false;
 
+  fileTransfer: FileTransferObject
 
-  constructor(private alertCtrl: AlertController,public navCtrl: NavController, public navParams: NavParams, private settingsProvider: SettingsProvider, private media: Media, private file: File,private loginProvider:LoginProvider) {
+  constructor(private alertCtrl: AlertController, public navCtrl: NavController, public navParams: NavParams, private settingsProvider: SettingsProvider, private media: Media, private loginProvider: LoginProvider, private file: File, private transfer: FileTransfer) {
 
     this.settingsProvider.getItemsInTrue().subscribe(items => {  //to refresh the items
 
     })
+
+    this.fileTransfer = this.transfer.create();
   }
 
 
@@ -126,10 +132,17 @@ export class PlaylistPage {
         newOne.descripcion = "by " + item.nombre.split(" by ")[1]
       }
 
+      newOne.url=''
+
       this.favorites.push(newOne) //add to the favorite list
       this.SaveOnPhone()
 
     }
+  }
+
+  IsSyncPosible()
+  {
+    return this.favorites.findIndex(i=>i.url=='')>=0
   }
 
   Remove(item: Item) {
@@ -162,7 +175,7 @@ export class PlaylistPage {
     }
   }
 
-  name:string=''
+  name: string = ''
 
   InitializeList(list: Array<Item>, source: Array<Item>) {
     source.forEach(element => {
@@ -288,13 +301,12 @@ export class PlaylistPage {
     }
     else {
       if (this.myfile != undefined && this.myfile != null) {
-      
+
         try {
           this.myfile.stop()
           this.playing = false
         }
-        catch (e)
-        {
+        catch (e) {
           this.settingsProvider.ShowToast(e)
         }
 
@@ -331,5 +343,57 @@ export class PlaylistPage {
     alert.present();
 
   }
+
+  Sync() {
+
+    if(this.requesting)
+    return
+
+    var favoritesTemp = new Array<ItemPlayer>()
+    favoritesTemp = JSON.parse(localStorage.getItem('favorites'))
+
+    var candidates = []
+
+    favoritesTemp.forEach(element => {
+      if (element.url == '')                         //if doesn't have the url
+      {
+        candidates.push(element.id)
+      }
+    });
+
+    if (candidates.length == 0)
+      return
+
+    this.requesting = true
+    this.settingsProvider.getURL(candidates.join(',')).subscribe(result => { //get the url
+      this.requesting = false
+      result.forEach(url => {
+        this.download(url)
+      })
+
+    }, error => {
+      this.requesting = false
+      this.settingsProvider.ShowToast("Error trying to get URLs")
+    }, () => { })
+  }
+
+  requesting: boolean = false
+
+  download(url: URL) {
+
+    var arr = url.AudioUrl.split('/')
+
+    this.requesting = true
+    this.fileTransfer.download(url.AudioUrl, this.file.externalDataDirectory + arr[arr.length - 1]).then((entry) => {
+      this.requesting = false
+      this.settingsProvider.Update(url.PlaylistID, arr[arr.length - 1])
+      // this.settingsProvider.ShowToast('Downloaded')
+    },
+      (error) => {
+        this.requesting = false
+        this.settingsProvider.ShowToast('Error trying to download the lecture')
+      });
+  }
+
 
 }

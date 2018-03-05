@@ -27,7 +27,7 @@ export class SettingsPage {
   form: FormGroup;
   requesting: boolean = false
 
-  constructor(private toast: Toast, private nativeAudio: NativeAudio,private localNotifications: LocalNotifications, public navCtrl: NavController, public navParams: NavParams, private fb: FormBuilder, private settingsProvider: SettingsProvider, private network: Network) {
+  constructor(private toast: Toast, private nativeAudio: NativeAudio, private localNotifications: LocalNotifications, public navCtrl: NavController, public navParams: NavParams, private fb: FormBuilder, private settingsProvider: SettingsProvider, private network: Network) {
     this.InitializeForm()
   }
 
@@ -55,15 +55,14 @@ export class SettingsPage {
 
     }, error => { }, () => { })
 
-    
-    if(JSON.parse(localStorage.getItem('favorites')).length==0) //check if exist elements
-      this.settingsProvider.ShowAlert('Oops',"You need to add items to your list")
+
+    if (JSON.parse(localStorage.getItem('favorites')).length == 0) //check if exist elements
+      this.settingsProvider.ShowAlert('Oops', "You need to add items to your list")
 
   }
 
 
-  ScheduleTask() 
-  {
+  ScheduleTask() {
 
     this.Save()
   }
@@ -71,8 +70,8 @@ export class SettingsPage {
   getDays(): Array<Date> {
     var current = new Date().getDay() + 1
 
-    var dateOnForm=new Date(this.form.value.downloadTime)
-    var today=new Date()
+    var dateOnForm = new Date(this.form.value.downloadTime)
+    var today = new Date()
 
     var arr = []
     this.form.value.downloadDays.forEach(element => {
@@ -81,13 +80,12 @@ export class SettingsPage {
 
       var a;
 
-      if (current == ele)
-      {
-        if(  
-            (today.getHours()>dateOnForm.getHours()) || 
-            (today.getHours()==dateOnForm.getHours() && today.getMinutes()>dateOnForm.getMinutes() ) //if the time is over for today
-          
-          ) 
+      if (current == ele) {
+        if (
+          (today.getHours() > dateOnForm.getHours()) ||
+          (today.getHours() == dateOnForm.getHours() && today.getMinutes() > dateOnForm.getMinutes()) //if the time is over for today
+
+        )
           a = moment().add(7, 'days')
         else
           a = moment().add(0, 'days')
@@ -98,8 +96,8 @@ export class SettingsPage {
         a = moment().add(7 - current + ele, 'days')
 
       var date = new Date(a.toString())
-      date.setHours( dateOnForm.getHours())
-      date.setMinutes(dateOnForm.getMinutes())  
+      date.setHours(dateOnForm.getHours())
+      date.setMinutes(dateOnForm.getMinutes())
 
       arr.push(date)
 
@@ -108,52 +106,53 @@ export class SettingsPage {
     return arr
   }
 
-  Save()
-  {
+  Save() {
 
-    if(this.requesting)
-    return;
+    if (this.requesting)
+      return;
 
-    this.requesting=true
+    this.requesting = true
 
-    var setting=new Setting()
-    setting.downloadTime= new Date(this.form.value.downloadTime).toTimeString().split(' ')[0]
-    setting.wifiOnly=this.form.value.wifiOnly
-    setting.downloadDays=this.form.value.downloadDays.join(",")
-    
-     var arr=[]
+    var setting = new Setting()
+    setting.downloadTime = new Date(this.form.value.downloadTime).toTimeString().split(' ')[0]
+    setting.wifiOnly = this.form.value.wifiOnly
+    setting.downloadDays = this.form.value.downloadDays.join(",")
 
-     JSON.parse(localStorage.getItem('favorites')).forEach(element => {
-       arr.push(element.id)
-     });
+    var arr = []
 
-    setting.savedPlaylist=arr.join(',')     
+    JSON.parse(localStorage.getItem('favorites')).forEach(element => {
+      arr.push(element.id)
+    });
 
-    this.settingsProvider.setSettings(setting).subscribe(result=>{
-      this.requesting=false 
-      
-      this.getDays().forEach(element => {  //create schedule for any task
-             this.Createtask(element,setting.savedPlaylist)
-      });
+    setting.savedPlaylist = arr.join(',')
 
-    },error=>{
-      this.requesting=false
-      this.settingsProvider.ShowAlert("Oops","Error trying to save new settings")
-    },()=>{})
+    this.settingsProvider.setSettings(setting).subscribe(result => {
+      this.requesting = false
+
+      this.localNotifications.cancelAll().then(result => {
+        this.getDays().forEach(element => {  //create schedule for any task
+          this.Createtask(element, setting.savedPlaylist)
+        });
+
+      })
+
+    }, error => {
+      this.requesting = false
+      this.settingsProvider.ShowAlert("Oops", "Error trying to save new settings")
+    }, () => { })
   }
 
-  Createtask(time:Date,_ids:string)
-  {
-     this.localNotifications.schedule({
-      id:Math.floor((Math.random() * 100000) + 1),
-      title:'Downloading',
-      text:'',
-      at:time,
-      data:{ids:_ids,connectionType:this.form.value.wifiOnly}
+  Createtask(time: Date, _ids: string) {
+
+    this.localNotifications.schedule({
+      id: Math.floor((Math.random() * 100000) + 1),
+      title: 'Downloading',
+      text: '',
+      at: time,
+      data: { ids: _ids, connectionType: this.form.value.wifiOnly }
     })
+
   }
-
-
 
 }
 

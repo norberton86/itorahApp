@@ -38,6 +38,10 @@
       </ion-row>
       <ion-row>
         <ion-col col-6 style="color: #3775be">Click to play</ion-col>
+        <ion-col col-6 style="text-align: right;color: #3775be">
+            <span (click)="Sync()" *ngIf="!requesting&&IsSyncPosible()"><ion-icon name="sync" style="margin-right: 0.3em;"></ion-icon>Sync</span> 
+            <ion-spinner *ngIf="requesting"></ion-spinner>
+        </ion-col>
       </ion-row>
     </ion-grid>
 

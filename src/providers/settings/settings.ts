@@ -110,6 +110,33 @@ export class SettingsProvider {
   getItemsInTrue(): Observable<string> {
     return this.subjectItemsInTrue.asObservable();
   }
+
+
+  CheckIfExist(id: number) {
+    var data = new Array<ItemPlayer>()
+    data = JSON.parse(localStorage.getItem('favorites'))
+
+    var exists = false
+    data.forEach(element => {
+      if (element.id == id)
+        exists = true
+    });
+
+    return exists
+  }
+
+  Update(id: number, url: string) {
+    var data = new Array<ItemPlayer>()
+    data = JSON.parse(localStorage.getItem('favorites'))
+
+    data.forEach(element => {
+      if (element.id == id)
+        element.url = url //update
+    })
+
+    localStorage.setItem('favorites', JSON.stringify(data))  //save
+  }
+
 }
 
 export class Item{

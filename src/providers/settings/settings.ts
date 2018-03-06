@@ -137,6 +137,25 @@ export class SettingsProvider {
     localStorage.setItem('favorites', JSON.stringify(data))  //save
   }
 
+  SaveSettingsLocally(setting:Setting)
+  {
+     localStorage.setItem('setting',JSON.stringify(setting))
+  }
+
+  getSettingsLocally():Setting
+  {
+     return JSON.parse( localStorage.getItem('setting') )
+  }
+
+  getFavoritesIds():string
+  {
+    var arr=[]
+    JSON.parse(localStorage.getItem('favorites')).forEach(element => {
+      arr.push(element.id)
+    });
+
+    return arr.join(',')
+  }
 }
 
 export class Item{

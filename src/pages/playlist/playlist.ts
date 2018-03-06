@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { SettingsPage } from '../settings/settings'
 import { Media, MediaObject } from '@ionic-native/media';
-import { SettingsProvider, Item, ItemPlayer, URL } from '../../providers/settings/settings';
+import { SettingsProvider, Item, ItemPlayer, URL, Setting } from '../../providers/settings/settings';
 import { LoginProvider } from '../../providers/login/login';
 import { File } from '@ionic-native/file';
 
@@ -140,7 +140,7 @@ export class PlaylistPage {
     }
   }
 
-  IsSyncPosible():boolean {
+  IsSyncPosible(): boolean {
     return this.favorites.findIndex(i => i.url == '') >= 0
   }
 
@@ -165,14 +165,13 @@ export class PlaylistPage {
         this.InitializeList(this.broweSubList, item.subList)
 
         localStorage.setItem('firsTime', 'false')  //remove the first time condition
-      }, error => {localStorage.setItem('firsTime', 'false')  }, () => { })
+      }, error => { localStorage.setItem('firsTime', 'false') }, () => { })
     }
-    else
-    {
-       this.favorites = JSON.parse(localStorage.getItem('favorites'))
-       
-       this.InitializeListLocalData(this.browseList)
-       this.InitializeListLocalData(this.broweSubList)
+    else {
+      this.favorites = JSON.parse(localStorage.getItem('favorites'))
+
+      this.InitializeListLocalData(this.browseList)
+      this.InitializeListLocalData(this.broweSubList)
     }
 
 
@@ -188,20 +187,18 @@ export class PlaylistPage {
 
   InitializeListLocalData(list: Array<Item>) {
 
-      list.forEach(item => {
+    list.forEach(item => {
 
-        if(this.favorites.findIndex(s=>s.id==item.id)>=0)
-        {
-           item.color = "azulMenu"
-           item.isSavedPlaylist = true
-        }
-        else
-        {
-          item.color =  "gris"
-          item.isSavedPlaylist = false
-        }
+      if (this.favorites.findIndex(s => s.id == item.id) >= 0) {
+        item.color = "azulMenu"
+        item.isSavedPlaylist = true
+      }
+      else {
+        item.color = "gris"
+        item.isSavedPlaylist = false
+      }
 
-      })
+    })
 
   }
 
@@ -291,6 +288,7 @@ export class PlaylistPage {
 
   SaveOnPhone() {
     localStorage.setItem('favorites', JSON.stringify(this.favorites))
+    this.UpdateSettingsLocallyServer()
   }
 
   myfile: MediaObject
@@ -413,8 +411,8 @@ export class PlaylistPage {
     this.requesting = true
     this.fileTransfer.download(url.AudioUrl, this.file.externalDataDirectory + arr[arr.length - 1]).then((entry) => {
       this.requesting = false
-      this.settingsProvider.Update(url.PlaylistID, arr[arr.length - 1])
-      // this.settingsProvider.ShowToast('Downloaded')
+      this.settingsProvider.Update(url.PlaylistID, arr[arr.length - 1])  //update the url on local data
+      this.UpdateFavoritesURL(url.PlaylistID, arr[arr.length - 1])       //update the object favorite(is loaded in ram memory)
     },
       (error) => {
         this.requesting = false
@@ -422,5 +420,23 @@ export class PlaylistPage {
       });
   }
 
+  UpdateSettingsLocallyServer() 
+  {
+    var setting = this.settingsProvider.getSettingsLocally()
+    setting.savedPlaylist = this.settingsProvider.getFavoritesIds() //updates the favorites ids
+
+    this.settingsProvider.setSettings(setting).subscribe(result => {       //save settings on server
+
+    }, error => { this.settingsProvider.ShowToast("Error saving settings") }, () => { })
+
+    this.settingsProvider.SaveSettingsLocally(setting)  //save settings locally
+  }
+
+  UpdateFavoritesURL(id:number,url:string)
+  {
+     var candidate=this.favorites.find(i=>i.id==id)
+     if(candidate!=undefined&&candidate!=null)
+     candidate.url=url
+  }
 
 }

@@ -117,14 +117,7 @@ export class SettingsPage {
     setting.downloadTime = new Date(this.form.value.downloadTime).toTimeString().split(' ')[0]
     setting.wifiOnly = this.form.value.wifiOnly
     setting.downloadDays = this.form.value.downloadDays.join(",")
-
-    var arr = []
-
-    JSON.parse(localStorage.getItem('favorites')).forEach(element => {
-      arr.push(element.id)
-    });
-
-    setting.savedPlaylist = arr.join(',')
+    setting.savedPlaylist = this.settingsProvider.getFavoritesIds()
 
     this.settingsProvider.setSettings(setting).subscribe(result => {
       this.requesting = false
@@ -133,6 +126,8 @@ export class SettingsPage {
         this.getDays().forEach(element => {  //create schedule for any task
           this.Createtask(element, setting.savedPlaylist)
         });
+
+        this.settingsProvider.SaveSettingsLocally(setting)
 
       })
 

@@ -44,7 +44,7 @@ export class HomePage {
       this.goNoConnection()
     });
 
-    /*
+    
     this.platform.ready().then((ready) => {
 
     this.fileTransfer = this.transfer.create();
@@ -55,10 +55,12 @@ export class HomePage {
 
       if (this.network.type == 'wifi' && data.connectionType == true) //download only with wifi 
       {
-        this.settingsProvider.ShowToast('Please change your settings to allow download with any internet connection type')
+        
       }
       else  //downlaod always
       {
+        
+        
 
         this.settingsProvider.getURL(data.ids).subscribe(result => {
           result.forEach(url => {
@@ -76,7 +78,7 @@ export class HomePage {
     })
 
 
-    }) */
+    }) 
   }
 
   download(url: URL) {
@@ -112,8 +114,7 @@ export class HomePage {
     }
   }
 
-  Logout() {
-
+  Logout() {    
 
     let alert = this.alertCtrl.create({
       title: 'Confirm',

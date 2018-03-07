@@ -77,7 +77,7 @@ export class PlaylistPage {
   { id: 13, nombre: "Parasha of the Week by Rabbi Joey Haber", descripcion: "Updated 12/22/2017", color: "gris", isSavedPlaylist: false, subList: [], title: "" }];
 
   //Variables para cambiar de contexto
-  reproductor: boolean;
+
   content_bro: boolean = false;
   content_play: boolean = true;
   positivo: boolean = true;//Vamriable para activar y desactivar los botones (playlist y browse)
@@ -97,6 +97,12 @@ export class PlaylistPage {
 
 
   RemoveinFavorites(item: ItemPlayer) {
+
+    if (this.itemPlaying != null && item.id==this.itemPlaying.id) {
+      this.stopedByUser=true
+      this.myfile.stop()
+      this.itemPlaying = null
+    }
 
     var element = this.browseList.find(i => i.id == item.id)
 
@@ -154,31 +160,20 @@ export class PlaylistPage {
   ionViewDidLoad() {
     console.log('ionViewDidLoad PlaylistPage');
 
-    if (localStorage.getItem('firsTime') == 'true')  //only the first time when the app is loaded we add the items from the server instead to load locally
-    {
-      this.settingsProvider.getItems().subscribe(respond => {
+    try {
 
-        this.InitializeList(this.browseList, respond)
-
-        var item = respond.find(i => i.title == "Parasha of the Week")
-
-        this.InitializeList(this.broweSubList, item.subList)
-
-        localStorage.setItem('firsTime', 'false')  //remove the first time condition
-      }, error => { localStorage.setItem('firsTime', 'false') }, () => { })
-    }
-    else {
       this.favorites = JSON.parse(localStorage.getItem('favorites'))
-
       this.InitializeListLocalData(this.browseList)
       this.InitializeListLocalData(this.broweSubList)
+
+      if (this.loginProvider.getToken() != '')  //to load the initials of the user's name
+      {
+        this.name = JSON.parse(localStorage.getItem('userItorah')).name;
+        this.name = this.name.split(" ")[0][0] + this.name.split(" ")[1][0]
+      }
     }
-
-
-    if (this.loginProvider.getToken() != '')  //to load the initials of the user's name
-    {
-      this.name = JSON.parse(localStorage.getItem('userItorah')).name;
-      this.name = this.name.split(" ")[0][0] + this.name.split(" ")[1][0]
+    catch (e) {
+      this.settingsProvider.ShowToast(e)
     }
   }
 
@@ -227,13 +222,17 @@ export class PlaylistPage {
 
   //Metodo que te envia a la pagina principal la que tiene el PaginaWeb
   goHome(): void {
+    this.Stop()
     this.navCtrl.pop();
   }
 
   //cambia las variables deacuedo a la vista que queremos mostrar al dar click en los botones PlayList y Browse
   //en este caso se muestra la lista2 
   //La variable Aux es la que contiene el boton que se esta seleccionando
+
+  aux: number
   cambiaContent(aux): void {
+    this.aux = aux
     if (aux == 1) {
       this.content_play = true;
       this.content_bro = false;
@@ -244,7 +243,6 @@ export class PlaylistPage {
       this.content_bro = true;
       this.content_play = false;
       this.positivo = false;
-      this.reproductor = false;
       this.content_sig = false
     }
   }
@@ -255,7 +253,6 @@ export class PlaylistPage {
     this.content_bro = false;
     this.content_play = false;
     this.positivo = false;
-    this.reproductor = false;
     this.content_sig = true
   }
 
@@ -272,18 +269,32 @@ export class PlaylistPage {
 
   }
 
+  itemPlaying: ItemPlayer = null
+
   changeColorWithPlayer(item: ItemPlayer): void {
-    if (item.color == "gris") {
-      item.color = "amarillo"
-      this.reproductor = true
-    }
-    else {
-      item.color = "gris"
-      this.reproductor = false
-    }
 
-    this.Play(item.id)  //try to play/stop the player
+    if (this.itemPlaying == null) {  //if nobody is playing 
 
+      this.itemPlaying = item
+      this.Play()
+    }
+    else if (this.itemPlaying != null && this.itemPlaying.id == item.id) {  //if is the same element then means that needs to stop
+
+      this.itemPlaying = null
+      this.Stop()
+    }
+    else {  //if its a different element needs change to the new one
+      this.Stop()
+      this.itemPlaying = item
+      this.Play()
+    }
+  }
+
+  ColorInFavorites(item: ItemPlayer) {
+    if (this.itemPlaying != null && this.itemPlaying.id == item.id)
+      return "amarillo"
+    else
+      return "gris"
   }
 
   SaveOnPhone() {
@@ -293,52 +304,65 @@ export class PlaylistPage {
 
   myfile: MediaObject
 
-  playing: boolean = false
 
-  Play(id: number)  //name is like: '3427.mp3'
-  {
-    if (!this.playing) {
+  Play() {
+    var favoritesTemp = new Array<ItemPlayer>()
+    favoritesTemp = JSON.parse(localStorage.getItem('favorites'))
 
-      var favoritesTemp = new Array<ItemPlayer>()
-      favoritesTemp = JSON.parse(localStorage.getItem('favorites'))
+    var url = ''
 
-      var url = ''
-
-      favoritesTemp.forEach(element => {  //find the url for this element
-        if (element.id == id) {
-          url = element.url
-        }
-      });
-
-      if (url != '') {
-        try {
-          this.myfile = this.media.create(this.file.externalDataDirectory + url); //load the file
-          this.myfile.play();
-          this.playing = true                                                      //play the file
-        }
-        catch (e) {
-          this.settingsProvider.ShowToast(e)
-        }
+    favoritesTemp.forEach(element => {  //find the url for this element
+      if (element.id == this.itemPlaying.id) {
+        url = element.url
       }
-      else {
-        this.settingsProvider.ShowAlert("Oops", "This file is not available")
+    });
+
+    if (url != '') {
+      try {
+        this.myfile = this.media.create(this.file.externalDataDirectory + url); //load the file
+        this.myfile.play();
+        this.status = "play"
+        this.stopedByUser=false
+
+        this.myfile.onStatusUpdate.subscribe(status => {
+          if (status == this.media.MEDIA_STOPPED && !this.stopedByUser) {
+            this.Forward()
+
+
+          }
+          else if (status == this.media.MEDIA_STOPPED && this.stopedByUser) {
+            this.stopedByUser = false
+            
+          }
+        });
+
+
+      }
+      catch (e) {
+        this.settingsProvider.ShowToast(e)
       }
     }
     else {
-      if (this.myfile != undefined && this.myfile != null) {
-
-        try {
-          this.myfile.stop()
-          this.playing = false
-        }
-        catch (e) {
-          this.settingsProvider.ShowToast(e)
-        }
-
-      }
+      this.settingsProvider.ShowAlert("Oops", "This file is not available")
     }
 
+  }
 
+  stopedByUser: boolean = false
+
+  Stop() {
+    if (this.myfile != undefined && this.myfile != null) {
+
+      try {
+        this.stopedByUser = true
+        this.myfile.stop()
+
+      }
+      catch (e) {
+        this.settingsProvider.ShowToast(e)
+      }
+
+    }
   }
 
   Logout() {
@@ -359,6 +383,7 @@ export class PlaylistPage {
           handler: () => {
 
             localStorage.removeItem('userItorah')
+            this.Stop()
             this.navCtrl.pop()
 
           }
@@ -420,23 +445,80 @@ export class PlaylistPage {
       });
   }
 
-  UpdateSettingsLocallyServer() 
-  {
+  UpdateSettingsLocallyServer() {
     var setting = this.settingsProvider.getSettingsLocally()
     setting.savedPlaylist = this.settingsProvider.getFavoritesIds() //updates the favorites ids
 
     this.settingsProvider.setSettings(setting).subscribe(result => {       //save settings on server
+
 
     }, error => { this.settingsProvider.ShowToast("Error saving settings") }, () => { })
 
     this.settingsProvider.SaveSettingsLocally(setting)  //save settings locally
   }
 
-  UpdateFavoritesURL(id:number,url:string)
-  {
-     var candidate=this.favorites.find(i=>i.id==id)
-     if(candidate!=undefined&&candidate!=null)
-     candidate.url=url
+  UpdateFavoritesURL(id: number, url: string) {
+    var candidate = this.favorites.find(i => i.id == id)
+    if (candidate != undefined && candidate != null)
+      candidate.url = url
+  }
+  //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+  status: string
+
+  PlayFromUI() {
+    if (this.myfile != undefined && this.myfile != null) {
+      this.myfile.play()
+      this.status = 'play'
+    }
+  }
+
+  PauseFromUI() {
+    if (this.myfile != undefined && this.myfile != null) {
+      this.myfile.pause()
+      this.status = 'pause'
+    }
+  }
+
+  Forward() {
+    this.Stop()
+    var index = this.favorites.findIndex(i => i.id == this.itemPlaying.id)
+    if (index == this.favorites.length - 1) //if is the last one
+    {
+      this.itemPlaying = this.favorites[0]
+    }
+    else {
+      this.itemPlaying = this.favorites[index + 1]
+    }
+    this.Play()
+  }
+
+  Back() {
+    this.Stop()
+    var index = this.favorites.findIndex(i => i.id == this.itemPlaying.id)
+    if (index == 0) //if is the first one
+    {
+      this.itemPlaying = this.favorites[this.favorites.length - 1]
+    }
+    else {
+      this.itemPlaying = this.favorites[index - 1]
+    }
+    this.Play()
+  }
+
+  ReloadFromUI() {
+    this.Stop()
+    this.Play()
+  }
+
+  randomList: Array<number> = []
+  Random() {
+    this.randomList = []
+    while (this.randomList.length != this.favorites.length) {
+      var random = Math.floor(Math.random() * this.favorites.length);
+      if (this.randomList.findIndex(i => i == random) < 0)
+        this.randomList.push(random)
+    }
   }
 
 }

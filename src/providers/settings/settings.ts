@@ -88,7 +88,7 @@ export class SettingsProvider {
   }
 
   ShowToast(message: string) {
-    this.toast.show(message, '10000', 'center').subscribe(
+    this.toast.show(message, '3000', 'center').subscribe(
       toast => {
         console.log(toast);
       }

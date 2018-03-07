@@ -47,9 +47,9 @@ export class SettingsPage {
 
     this.settingsProvider.getSettings().subscribe(setting => {
 
-      var now = new Date().toISOString()
+      this.now = new Date().toISOString()
 
-      var dateForForm = "2000-01-01T" + setting.downloadTime + now.substr(now.length - 6)
+      var dateForForm = "2000-01-01T" + setting.downloadTime + this.now.substr(this.now.length - 6)
 
       this.form.patchValue({ wifiOnly: setting.wifiOnly, downloadTime: dateForForm, downloadDays: setting.downloadDays.split(',') })
 
@@ -60,7 +60,7 @@ export class SettingsPage {
       this.settingsProvider.ShowAlert('Oops', "You need to add items to your list")
 
   }
-
+  now: string
 
   ScheduleTask() {
 
@@ -80,10 +80,17 @@ export class SettingsPage {
 
       var a;
 
+      var horaToday = parseInt(today.toLocaleTimeString().split(':')[0])
+      var minutosToday = parseInt(today.toLocaleTimeString().split(':')[1])
+
+      var half = new Date().toLocaleTimeString().split(' ')[1]
+      if (half == 'PM')
+        horaToday += 12
+
       if (current == ele) {
         if (
-          (today.getHours() > dateOnForm.getHours()) ||
-          (today.getHours() == dateOnForm.getHours() && today.getMinutes() > dateOnForm.getMinutes()) //if the time is over for today
+          (horaToday > dateOnForm.getHours()) ||
+          (horaToday == dateOnForm.getHours() && minutosToday > dateOnForm.getMinutes()) //if the time is over for today
 
         )
           a = moment().add(7, 'days')
@@ -128,7 +135,6 @@ export class SettingsPage {
         });
 
         this.settingsProvider.SaveSettingsLocally(setting)
-
       })
 
     }, error => {
@@ -139,17 +145,20 @@ export class SettingsPage {
 
   Createtask(time: Date, _ids: string) {
 
+
     this.localNotifications.schedule({
-      id: Math.floor((Math.random() * 100000) + 1),
+      id: 1,
       title: 'Downloading',
       text: '',
       at: time,
       data: { ids: _ids, connectionType: this.form.value.wifiOnly }
     })
 
+    this.settingsProvider.ShowToast(time.toString())
   }
 
 }
+
 
 Date.prototype.toISOString = function () {
   var tzo = -this.getTimezoneOffset(),

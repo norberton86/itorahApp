@@ -46,7 +46,7 @@
     </ion-grid>
 
     <ion-card *ngFor="let lista of favorites">
-      <ion-item color={{lista.color}} style="padding-left: 5px" >
+      <ion-item color={{ColorInFavorites(lista)}} style="padding-left: 5px" >
         <ion-row>
           <ion-col col-11 (click)="changeColorWithPlayer(lista)">
             <div style="font-size: 15px; font-weight: bold; color: #666f76">{{lista.nombre}}</div>
@@ -133,12 +133,15 @@
 </ion-content>
 
 <ion-footer>
-  <ion-toolbar *ngIf="reproductor" color="azulReproductor" style="padding: 0">
+  <ion-toolbar *ngIf="itemPlaying!=null" color="azulReproductor" style="padding: 0">
     <ion-row style="text-align: center; padding: 0">
-      <ion-col><button ion-button color="light" clear><ion-icon name="sync"></ion-icon></button></ion-col>
-      <ion-col><button ion-button color="light" clear><ion-icon name="skip-backward"></ion-icon></button></ion-col>
-      <ion-col><button ion-button color="light" clear><ion-icon name="pause"></ion-icon></button></ion-col>
-      <ion-col><button ion-button color="light" clear> <ion-icon name="skip-forward"></ion-icon></button></ion-col>
+      <ion-col (click)="ReloadFromUI()"><button ion-button color="light" clear><ion-icon name="sync"></ion-icon></button></ion-col>
+      <ion-col (click)="Back()"><button ion-button color="light" clear><ion-icon name="skip-backward"></ion-icon></button></ion-col>
+      
+      <ion-col *ngIf="status=='play'" (click)="PauseFromUI()"><button ion-button color="light" clear><ion-icon name="pause"></ion-icon></button></ion-col>
+      <ion-col *ngIf="status=='pause'" (click)="PlayFromUI()"><button ion-button color="light" clear><ion-icon name="play"></ion-icon></button></ion-col>
+      
+      <ion-col (click)="Forward()"><button ion-button color="light" clear> <ion-icon name="skip-forward"></ion-icon></button></ion-col>
       <ion-col><button ion-button color="light" clear><ion-icon name="shuffle"></ion-icon></button></ion-col>
     </ion-row>
   </ion-toolbar>

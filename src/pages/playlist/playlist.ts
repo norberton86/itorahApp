@@ -324,6 +324,7 @@ export class PlaylistPage {
         this.status = "play"
         this.stopedByUser = false
 
+         /*
         this.myfile.onStatusUpdate.subscribe(status => {
           if (status == this.media.MEDIA_STOPPED && !this.stopedByUser) {
             this.Forward()
@@ -334,7 +335,7 @@ export class PlaylistPage {
             this.stopedByUser = false
 
           }
-        });
+        });*/
 
 
       }

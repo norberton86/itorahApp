@@ -142,7 +142,7 @@
       <ion-col *ngIf="status=='pause'" (click)="PlayFromUI()"><button ion-button color="light" clear><ion-icon name="play"></ion-icon></button></ion-col>
       
       <ion-col (click)="Forward()"><button ion-button color="light" clear> <ion-icon name="skip-forward"></ion-icon></button></ion-col>
-      <ion-col><button ion-button color="light" clear><ion-icon name="shuffle"></ion-icon></button></ion-col>
+      <ion-col (click)="Random()" ><button ion-button color="{{ColorRandom()}}" clear><ion-icon name="shuffle"></ion-icon></button></ion-col>
     </ion-row>
   </ion-toolbar>
   <ion-toolbar color="violeta" style="padding: 0">

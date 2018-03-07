@@ -98,8 +98,8 @@ export class PlaylistPage {
 
   RemoveinFavorites(item: ItemPlayer) {
 
-    if (this.itemPlaying != null && item.id==this.itemPlaying.id) {
-      this.stopedByUser=true
+    if (this.itemPlaying != null && item.id == this.itemPlaying.id) {
+      this.stopedByUser = true
       this.myfile.stop()
       this.itemPlaying = null
     }
@@ -322,7 +322,7 @@ export class PlaylistPage {
         this.myfile = this.media.create(this.file.externalDataDirectory + url); //load the file
         this.myfile.play();
         this.status = "play"
-        this.stopedByUser=false
+        this.stopedByUser = false
 
         this.myfile.onStatusUpdate.subscribe(status => {
           if (status == this.media.MEDIA_STOPPED && !this.stopedByUser) {
@@ -332,7 +332,7 @@ export class PlaylistPage {
           }
           else if (status == this.media.MEDIA_STOPPED && this.stopedByUser) {
             this.stopedByUser = false
-            
+
           }
         });
 
@@ -482,26 +482,57 @@ export class PlaylistPage {
 
   Forward() {
     this.Stop()
-    var index = this.favorites.findIndex(i => i.id == this.itemPlaying.id)
-    if (index == this.favorites.length - 1) //if is the last one
-    {
-      this.itemPlaying = this.favorites[0]
+
+    if (this.randomList.length > 0) {                                         //if the random list is active
+      var index = this.randomList.findIndex(i => i.id == this.itemPlaying.id)
+      if (index == this.randomList.length - 1) //if is the last one
+      {
+        this.itemPlaying = this.randomList[0]
+      }
+      else {
+        this.itemPlaying = this.randomList[index + 1]
+      }
+
     }
     else {
-      this.itemPlaying = this.favorites[index + 1]
+
+      var index = this.favorites.findIndex(i => i.id == this.itemPlaying.id)
+      if (index == this.favorites.length - 1) //if is the last one
+      {
+        this.itemPlaying = this.favorites[0]
+      }
+      else {
+        this.itemPlaying = this.favorites[index + 1]
+      }
+
     }
+
     this.Play()
+
   }
 
   Back() {
     this.Stop()
-    var index = this.favorites.findIndex(i => i.id == this.itemPlaying.id)
-    if (index == 0) //if is the first one
-    {
-      this.itemPlaying = this.favorites[this.favorites.length - 1]
+
+    if (this.randomList.length > 0) {
+      var index = this.randomList.findIndex(i => i.id == this.itemPlaying.id)
+      if (index == 0) //if is the first one
+      {
+        this.itemPlaying = this.randomList[this.randomList.length - 1]
+      }
+      else {
+        this.itemPlaying = this.randomList[index - 1]
+      }
     }
     else {
-      this.itemPlaying = this.favorites[index - 1]
+      var index = this.favorites.findIndex(i => i.id == this.itemPlaying.id)
+      if (index == 0) //if is the first one
+      {
+        this.itemPlaying = this.favorites[this.favorites.length - 1]
+      }
+      else {
+        this.itemPlaying = this.favorites[index - 1]
+      }
     }
     this.Play()
   }
@@ -511,14 +542,41 @@ export class PlaylistPage {
     this.Play()
   }
 
-  randomList: Array<number> = []
+  randomList: Array<ItemPlayer> = []
   Random() {
-    this.randomList = []
-    while (this.randomList.length != this.favorites.length) {
-      var random = Math.floor(Math.random() * this.favorites.length);
-      if (this.randomList.findIndex(i => i == random) < 0)
-        this.randomList.push(random)
+
+    if (this.randomList.length > 0)  //if active
+    {
+      this.randomList = []                        //deactivate
     }
+    else {
+      var randomPositions = []
+      while (randomPositions.length != this.favorites.length) {            //to generate the numbers random
+        var random = Math.floor(Math.random() * this.favorites.length);
+        if (randomPositions.findIndex(i => i == random) < 0)
+        {
+           randomPositions.push(random)
+           this.settingsProvider.ShowToast(randomPositions.length.toString())
+        }
+          
+      }
+
+      this.randomList = []
+      randomPositions.forEach(element => {
+        this.randomList.push(this.favorites[element])                     //populate the list 
+      });
+
+      if (this.itemPlaying == null)  //if nobody is playing 
+      {
+        this.itemPlaying = this.randomList[0]  //play the first element in the ramdom list
+        this.Play()
+      }
+    }
+
+  }
+
+  ColorRandom(){
+    return this.randomList.length==0?"light":"random"
   }
 
 }

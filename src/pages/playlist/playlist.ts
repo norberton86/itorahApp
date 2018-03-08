@@ -98,15 +98,16 @@ export class PlaylistPage {
 
       this.browseList.forEach(element => {
         if (element.id != 6 && d.indexOf(element.id.toString()) >= 0)
-          this.Add(element)
+          this.Add(element,false)
       });
 
 
       this.broweSubList.forEach(element => {
         if (d.indexOf(element.id.toString()) >= 0)
-          this.Add(element)
+          this.Add(element,false)
       });
-
+     
+     localStorage.setItem('favorites', JSON.stringify(this.favorites))
      //------------------------------------------------- 
         this.ionViewDidLoad()
     })
@@ -139,7 +140,7 @@ export class PlaylistPage {
 
   }
 
-  Add(item: Item) {
+  Add(item: Item,save:boolean=true) {
     if (this.favorites.findIndex(i => i.id == item.id) >= 0)  //if already exits
       return
     else {
@@ -161,7 +162,9 @@ export class PlaylistPage {
       newOne.url = ''
 
       this.favorites.push(newOne) //add to the favorite list
+      if(save)
       this.SaveOnPhone()
+      
 
     }
   }

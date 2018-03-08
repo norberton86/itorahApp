@@ -87,8 +87,28 @@ export class PlaylistPage {
 
   constructor(private alertCtrl: AlertController, public navCtrl: NavController, public navParams: NavParams, private settingsProvider: SettingsProvider, private media: Media, private loginProvider: LoginProvider, private file: File, private transfer: FileTransfer) {
 
-    this.settingsProvider.getItemsInTrue().subscribe(items => {  //to refresh the items
+    this.settingsProvider.getItemsInTrue().subscribe(setting => {  //to refresh the items
+     
+     this.itemPlaying=null
+     this.Stop()
+      
+     this.favorites=[]
 
+      var d = setting.savedPlaylist.split(',')
+
+      this.browseList.forEach(element => {
+        if (element.id != 6 && d.indexOf(element.id.toString()) >= 0)
+          this.Add(element)
+      });
+
+
+      this.broweSubList.forEach(element => {
+        if (d.indexOf(element.id.toString()) >= 0)
+          this.Add(element)
+      });
+
+     //------------------------------------------------- 
+        this.ionViewDidLoad()
     })
 
     this.fileTransfer = this.transfer.create();

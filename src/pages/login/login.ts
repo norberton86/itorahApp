@@ -10,7 +10,8 @@ import { SettingsProvider, Item, ItemPlayer, URL, Setting } from '../../provider
 
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
-
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
+import { Observable } from 'rxjs/Observable';
 
 /**
  * Generated class for the LoginPage page.
@@ -29,7 +30,10 @@ export class LoginPage {
   form: FormGroup;
   requesting: boolean = false
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private loginProvider: LoginProvider, private fb: FormBuilder, private settingsProvider: SettingsProvider) {
+
+  setting: Setting = { downloadDays: '0', downloadTime: "01:01:00", savedPlaylist: '0', wifiOnly: false }
+
+  constructor(private afs: AngularFirestore, public navCtrl: NavController, public navParams: NavParams, private loginProvider: LoginProvider, private fb: FormBuilder, private settingsProvider: SettingsProvider) {
     this.InitializeForm()
   }
 
@@ -42,6 +46,7 @@ export class LoginPage {
     }
 
     this.form = this.fb.group(data);
+
   }
 
   ionViewDidLoad() {
@@ -98,7 +103,23 @@ export class LoginPage {
     this.loginProvider.Profile(token).subscribe(result => {
 
       this.requesting = false
-      this.Save({ name: result[0].FirstName + " " + result[0].LastName, email: this.form.value.email, token: token, provider: "itorah" })
+
+      this.afs.collection("usuario").doc(this.form.value.email).ref.get().then(doc=> {
+        if (doc.exists) 
+        {
+          this.setting.downloadDays= doc.data().downloadDays
+          this.setting.downloadTime= doc.data().downloadTime
+          this.setting.savedPlaylist= doc.data().savedPlaylist
+          this.setting.wifiOnly= doc.data().wifiOnly
+        } 
+
+        this.LoadFromServer(token,result)
+        
+      }).catch(error=> {
+        console.log("Error getting document:", error);
+      });
+
+
     }, error => {
       this.requesting = false
     }, () => { })
@@ -107,36 +128,36 @@ export class LoginPage {
   Save(data: any) {
 
     localStorage.setItem('userItorah', JSON.stringify({ name: data.name, email: data.email, token: data.token, provider: data.provider }))
-    this.LoadFromServer()
+
   }
 
 
-  LoadFromServer() {
-    this.settingsProvider.getItems().subscribe(respond => {
+  LoadFromServer(token: string, data: any) {
+    this.settingsProvider.getItems(token).subscribe(respond => {
 
-      console.log(respond)
+      var d = this.setting.savedPlaylist.split(',')
 
       respond.forEach(element => {
-        if(element.id!=6 && element.isSavedPlaylist)
-        this.Add(element)
+        if (element.id != 6 && d.indexOf(element.id.toString()) >= 0)
+          this.Add(element)
       });
 
       var item = respond.find(i => i.title == "Parasha of the Week")
 
       item.subList.forEach(element => {
-        if(element.isSavedPlaylist)
-        this.Add(element)
+        if (d.indexOf(element.id.toString()) >= 0)
+          this.Add(element)
       });
-     
-      localStorage.setItem("favorites",JSON.stringify(this.items))
 
-      this.LoadSettings()
+      localStorage.setItem("favorites", JSON.stringify(this.items))
+      this.Save({ name: data[0].FirstName + " " + data[0].LastName, email: this.form.value.email, token: token, provider: "itorah" })
+      this.SaveSettings()
 
-      
+
     }, error => { }, () => { })
   }
 
-  items:Array<ItemPlayer>=[]
+  items: Array<ItemPlayer> = []
 
   Add(item: Item) {
 
@@ -151,12 +172,9 @@ export class LoginPage {
     this.items.push(newOne)
   }
 
-  LoadSettings()
-  {
-    this.settingsProvider.getSettings().subscribe(setting=>{
-      this.settingsProvider.SaveSettingsLocally(setting)
-      this.navCtrl.push(HomePage); // this is to navigate when the login is succesful
-    })
+  SaveSettings() {
+    this.settingsProvider.UpdateFireBase(this.setting).then(result => { }).catch(error => { })
+    this.navCtrl.push(HomePage); // this is to navigate when the login is succesful
   }
 
 }

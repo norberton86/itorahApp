@@ -19,7 +19,7 @@ export class SettingsProvider {
   ruta: string
   header: Headers
 
-  private subjectItemsInTrue: Subject<string> = new Subject<string>();
+  private subjectItemsInTrue: Subject<Setting> = new Subject<Setting>();
 
   constructor(private afs: AngularFirestore, private http: Http, public alertCtrl: AlertController,private toast:Toast) {
     this.ruta = "https://itorahapi.3nom.com/api/app/";
@@ -27,10 +27,10 @@ export class SettingsProvider {
   }
 
 
-  public getItems(): Observable<Array<Item>> {
+  public getItems(token:string): Observable<Array<Item>> {
 
     let h = new Headers();
-    h.append('Authorization', 'bearer ' + this.getToken());
+    h.append('Authorization', 'bearer ' + token);
     h.append('Content-Type', 'application/json');
 
     return this.http.get(this.ruta+"playlists", { headers: h }).map(
@@ -84,8 +84,8 @@ export class SettingsProvider {
    this.SaveSettingsLocally(setting)
 
    return this.afs.collection("usuario")
-          .doc(JSON.parse(localStorage.getItem('userItorah')).email)
-          .set( setting )
+          .doc(this.getEmail())
+          .set( JSON.parse(JSON.stringify(setting)) )
   }
 
   ShowAlert(title: string, content: string) {
@@ -113,11 +113,19 @@ export class SettingsProvider {
       return ""
   }
 
-  setItemsInTrue(items: string) {
+  getEmail(): string {
+    if (localStorage.getItem('userItorah') != null && localStorage.getItem('userItorah') != "") {
+      return JSON.parse(localStorage.getItem('userItorah')).email
+    }
+    else
+      return ""
+  }
+
+  setItemsInTrue(items: Setting) {
     this.subjectItemsInTrue.next(items)
   }
 
-  getItemsInTrue(): Observable<string> {
+  getItemsInTrue(): Observable<Setting> {
     return this.subjectItemsInTrue.asObservable();
   }
 

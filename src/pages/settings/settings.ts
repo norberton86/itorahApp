@@ -30,6 +30,10 @@ export class SettingsPage {
 
   constructor(private afs: AngularFirestore, private toast: Toast, private nativeAudio: NativeAudio, private localNotifications: LocalNotifications, public navCtrl: NavController, public navParams: NavParams, private fb: FormBuilder, private settingsProvider: SettingsProvider, private network: Network) {
     this.InitializeForm()
+
+    this.settingsProvider.getItemsInTrue().subscribe(setting=>{
+        this.LoadForm()
+    })
   }
 
   InitializeForm() {
@@ -45,7 +49,11 @@ export class SettingsPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SettingsPage');
+    this.LoadForm()
+  }
 
+  LoadForm()
+  {
     var setting=this.settingsProvider.getSettingsLocally()
     this.now = new Date().toISOString()
     var dateForForm = "2000-01-01T" + setting.downloadTime + this.now.substr(this.now.length - 6)
@@ -55,7 +63,7 @@ export class SettingsPage {
     if (JSON.parse(localStorage.getItem('favorites')).length == 0) //check if exist elements
      this.settingsProvider.ShowAlert('Oops', "You need to add items to your list")
   }
-
+ 
   now: string
 
   getDays(): Array<Date> {
@@ -127,7 +135,7 @@ export class SettingsPage {
           this.Createtask(element, setting.savedPlaylist)
         });
 
-      })
+      }) 
 
     }).catch(error=>{
       this.requesting = false

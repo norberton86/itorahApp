@@ -4,7 +4,7 @@ import { LoginPage } from './../login/login';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import { LoginProvider } from '../../providers/login/login';
-import { SettingsProvider, URL, ItemPlayer } from '../../providers/settings/settings';
+import { SettingsProvider, URL, ItemPlayer, Setting } from '../../providers/settings/settings';
 
 import { Network } from '@ionic-native/network';
 import { LocalNotifications } from "@ionic-native/local-notifications";
@@ -17,7 +17,6 @@ import { Toast } from '@ionic-native/toast';
 import { AlertController } from 'ionic-angular';
 
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
-
 
 
 /**
@@ -39,7 +38,7 @@ export class HomePage {
 
 
   fileTransfer: FileTransferObject
-  constructor(private afs: AngularFirestore, private alertCtrl: AlertController, private toast: Toast, private settingsProvider: SettingsProvider, private file: File, private transfer: FileTransfer, private localNotifications: LocalNotifications, public navCtrl: NavController, public navParams: NavParams, private loginProvider: LoginProvider, private network: Network, private platform: Platform) {
+  constructor(private afs: AngularFirestore,private alertCtrl: AlertController, private toast: Toast, private settingsProvider: SettingsProvider, private file: File, private transfer: FileTransfer, private localNotifications: LocalNotifications, public navCtrl: NavController, public navParams: NavParams, private loginProvider: LoginProvider, private network: Network, private platform: Platform) {
 
     this.disconnectSubscription = this.network.onDisconnect().subscribe(() => {
       this.goNoConnection()
@@ -81,10 +80,24 @@ export class HomePage {
 
     })
 
-    this.afs.collection("usuario").doc(JSON.parse(localStorage.getItem('userItorah')).email ).snapshotChanges().subscribe(result => {
-      console.log(result.payload.data())
-      
-    })
+    this.afs.collection('usuario').doc(this.settingsProvider.getEmail()).ref.onSnapshot(doc=> {   //listen for any changes on the server
+       
+        console.log(doc.data())
+        if(!doc.metadata.hasPendingWrites) //if we have a change on the server(means is not local changes)
+        {
+          var setting=new Setting()
+          setting.downloadDays=doc.data().downloadDays
+          setting.downloadTime=doc.data().downloadTime
+          setting.savedPlaylist=doc.data().savedPlaylist
+          setting.wifiOnly=doc.data().wifiOnly
+
+          this.settingsProvider.SaveSettingsLocally(setting)
+
+          this.settingsProvider.setItemsInTrue(setting)
+        }
+    });
+
+
   }
 
 

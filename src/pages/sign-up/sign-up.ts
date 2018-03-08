@@ -71,9 +71,10 @@ export class SignUpPage {
       data => {
         this.requesting = false
         if (data) {
-          
+
+          this.loginProvider.ShowAlert("Good!","Account Created")  
           this.navCtrl.pop()
-          this.navCtrl.push(HomePage)
+        
         }
         else
         {

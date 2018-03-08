@@ -32,6 +32,18 @@ import { NativeAudio } from '@ionic-native/native-audio';
 import { Media, MediaObject } from '@ionic-native/media';
 
 
+import { AngularFireModule } from 'angularfire2';
+import { AngularFirestoreModule } from 'angularfire2/firestore';
+
+export const firebaseConfig={
+    apiKey: "AIzaSyBWtlYyUyajedqp6MT5JlWWP4pLN5Xc7kc",
+    authDomain: "itorah-59de6.firebaseapp.com",
+    databaseURL: "https://itorah-59de6.firebaseio.com",
+    projectId: "itorah-59de6",
+    storageBucket: "",
+    messagingSenderId: "441220923975"
+}
+
 @NgModule({
   declarations: [
     MyApp,
@@ -47,7 +59,9 @@ import { Media, MediaObject } from '@ionic-native/media';
     NoConnectionPageModule,
     PlaylistPageModule,
     SettingsPageModule,
-    HttpModule
+    HttpModule,
+    AngularFireModule.initializeApp(firebaseConfig),
+    AngularFirestoreModule.enablePersistence()
   ],
   bootstrap: [IonicApp],
   entryComponents: [

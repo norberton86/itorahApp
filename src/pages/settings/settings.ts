@@ -8,6 +8,7 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
 import { NativeAudio } from '@ionic-native/native-audio';
 import { Toast } from '@ionic-native/toast';
 import * as moment from 'moment';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 
 
 /**
@@ -27,7 +28,7 @@ export class SettingsPage {
   form: FormGroup;
   requesting: boolean = false
 
-  constructor(private toast: Toast, private nativeAudio: NativeAudio, private localNotifications: LocalNotifications, public navCtrl: NavController, public navParams: NavParams, private fb: FormBuilder, private settingsProvider: SettingsProvider, private network: Network) {
+  constructor(private afs: AngularFirestore, private toast: Toast, private nativeAudio: NativeAudio, private localNotifications: LocalNotifications, public navCtrl: NavController, public navParams: NavParams, private fb: FormBuilder, private settingsProvider: SettingsProvider, private network: Network) {
     this.InitializeForm()
   }
 
@@ -45,27 +46,17 @@ export class SettingsPage {
   ionViewDidLoad() {
     console.log('ionViewDidLoad SettingsPage');
 
-    this.settingsProvider.getSettings().subscribe(setting => {
+    var setting=this.settingsProvider.getSettingsLocally()
+    this.now = new Date().toISOString()
+    var dateForForm = "2000-01-01T" + setting.downloadTime + this.now.substr(this.now.length - 6)
 
-      this.now = new Date().toISOString()
-
-      var dateForForm = "2000-01-01T" + setting.downloadTime + this.now.substr(this.now.length - 6)
-
-      this.form.patchValue({ wifiOnly: setting.wifiOnly, downloadTime: dateForForm, downloadDays: setting.downloadDays.split(',') })
-
-    }, error => { }, () => { })
-
+    this.form.patchValue({ wifiOnly: setting.wifiOnly, downloadTime: dateForForm, downloadDays: setting.downloadDays.split(',') })
 
     if (JSON.parse(localStorage.getItem('favorites')).length == 0) //check if exist elements
-      this.settingsProvider.ShowAlert('Oops', "You need to add items to your list")
-
+     this.settingsProvider.ShowAlert('Oops', "You need to add items to your list")
   }
+
   now: string
-
-  ScheduleTask() {
-
-    this.Save()
-  }
 
   getDays(): Array<Date> {
     var current = new Date().getDay() + 1
@@ -126,25 +117,26 @@ export class SettingsPage {
     setting.downloadDays = this.form.value.downloadDays.join(",")
     setting.savedPlaylist = this.settingsProvider.getFavoritesIds()
 
-    this.settingsProvider.setSettings(setting).subscribe(result => {
+    this.settingsProvider.UpdateFireBase(setting).then(result=>{
+
       this.requesting = false
 
-      this.localNotifications.cancelAll().then(result => {
+      this.localNotifications.cancelAll().then(result => {    //cancell all notifications
+
         this.getDays().forEach(element => {  //create schedule for any task
           this.Createtask(element, setting.savedPlaylist)
         });
 
-        this.settingsProvider.SaveSettingsLocally(setting)
       })
 
-    }, error => {
+    }).catch(error=>{
       this.requesting = false
       this.settingsProvider.ShowAlert("Oops", "Error trying to save new settings")
-    }, () => { })
+    })
+
   }
 
   Createtask(time: Date, _ids: string) {
-
 
     this.localNotifications.schedule({
       id: 1,
@@ -153,8 +145,7 @@ export class SettingsPage {
       at: time,
       data: { ids: _ids, connectionType: this.form.value.wifiOnly }
     })
-
-    this.settingsProvider.ShowToast(time.toString())
+    //this.settingsProvider.ShowToast(time.toString())
   }
 
 }

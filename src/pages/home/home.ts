@@ -16,6 +16,7 @@ import { Toast } from '@ionic-native/toast';
 
 import { AlertController } from 'ionic-angular';
 
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 
 
 
@@ -38,48 +39,54 @@ export class HomePage {
 
 
   fileTransfer: FileTransferObject
-  constructor(private alertCtrl: AlertController, private toast: Toast, private settingsProvider: SettingsProvider, private file: File, private transfer: FileTransfer, private localNotifications: LocalNotifications, public navCtrl: NavController, public navParams: NavParams, private loginProvider: LoginProvider, private network: Network, private platform: Platform) {
+  constructor(private afs: AngularFirestore, private alertCtrl: AlertController, private toast: Toast, private settingsProvider: SettingsProvider, private file: File, private transfer: FileTransfer, private localNotifications: LocalNotifications, public navCtrl: NavController, public navParams: NavParams, private loginProvider: LoginProvider, private network: Network, private platform: Platform) {
 
     this.disconnectSubscription = this.network.onDisconnect().subscribe(() => {
       this.goNoConnection()
     });
 
-    
+
     this.platform.ready().then((ready) => {
 
-    this.fileTransfer = this.transfer.create();
+      this.fileTransfer = this.transfer.create();
 
-    this.localNotifications.on('trigger', (notification, state) => {
+      this.localNotifications.on('trigger', (notification, state) => {
 
-      let data = JSON.parse(notification.data)
+        let data = JSON.parse(notification.data)
 
-      if (this.network.type == 'wifi' && data.connectionType == true) //download only with wifi 
-      {
-        
-      }
-      else  //downlaod always
-      {
-        
-        
+        if (this.network.type == 'wifi' && data.connectionType == true) //download only with wifi 
+        {
 
-        this.settingsProvider.getURL(data.ids).subscribe(result => {
-          result.forEach(url => {
-            if (this.settingsProvider.CheckIfExist(url.PlaylistID))  //if is still on favorites
-            {
+        }
+        else  //downlaod always
+        {
 
-              this.download(url)
-            }
 
+
+          this.settingsProvider.getURL(data.ids).subscribe(result => {
+            result.forEach(url => {
+              if (this.settingsProvider.CheckIfExist(url.PlaylistID))  //if is still on favorites
+              {
+
+                this.download(url)
+              }
+
+            })
           })
-        })
 
-      }
+        }
+
+      })
+
 
     })
 
-
-    }) 
+    this.afs.collection("usuario").doc(JSON.parse(localStorage.getItem('userItorah')).email ).snapshotChanges().subscribe(result => {
+      console.log(result.payload.data())
+      
+    })
   }
+
 
   download(url: URL) {
 
@@ -106,6 +113,7 @@ export class HomePage {
       this.name = JSON.parse(localStorage.getItem('userItorah')).name;
       this.name = this.name.split(" ")[0][0] + this.name.split(" ")[1][0]
     }
+
   }
 
   ionViewDidEnter() {
@@ -114,7 +122,7 @@ export class HomePage {
     }
   }
 
-  Logout() {    
+  Logout() {
 
     let alert = this.alertCtrl.create({
       title: 'Confirm',

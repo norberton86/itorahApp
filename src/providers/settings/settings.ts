@@ -5,6 +5,7 @@ import { Injectable } from '@angular/core';
 import { AlertController } from 'ionic-angular';
 import { Subject } from "rxjs/Subject";
 import { Toast } from '@ionic-native/toast';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 
 /*
   Generated class for the SettingsProvider provider.
@@ -20,7 +21,7 @@ export class SettingsProvider {
 
   private subjectItemsInTrue: Subject<string> = new Subject<string>();
 
-  constructor(private http: Http, public alertCtrl: AlertController,private toast:Toast) {
+  constructor(private afs: AngularFirestore, private http: Http, public alertCtrl: AlertController,private toast:Toast) {
     this.ruta = "https://itorahapi.3nom.com/api/app/";
     this.header = new Headers({ "Content-Type": "application/json" });
   }
@@ -76,6 +77,15 @@ export class SettingsProvider {
         return response.toString();
       }
     )
+  }
+
+  UpdateFireBase(setting:Setting):Promise<any> {
+
+   this.SaveSettingsLocally(setting)
+
+   return this.afs.collection("usuario")
+          .doc(JSON.parse(localStorage.getItem('userItorah')).email)
+          .set( setting )
   }
 
   ShowAlert(title: string, content: string) {

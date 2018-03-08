@@ -197,24 +197,6 @@ export class PlaylistPage {
 
   }
 
-  InitializeList(list: Array<Item>, source: Array<Item>) {
-    source.forEach(element => {
-
-      list.forEach(item => {
-
-        if (element.id == item.id) {
-          item.color = element.isSavedPlaylist ? "azulMenu" : "gris"
-          item.isSavedPlaylist = element.isSavedPlaylist
-
-          if (item.isSavedPlaylist)  //if was choosen 
-            this.Add(item)
-        }
-      })
-
-    });
-
-  }
-
   //Metodo que te envia a la pagina Settings
   goSettings(): void {
     this.navCtrl.push(SettingsPage);
@@ -447,15 +429,17 @@ export class PlaylistPage {
   }
 
   UpdateSettingsLocallyServer() {
+
     var setting = this.settingsProvider.getSettingsLocally()
     setting.savedPlaylist = this.settingsProvider.getFavoritesIds() //updates the favorites ids
+    
+    this.settingsProvider.UpdateFireBase(setting).then(result=>{
 
-    this.settingsProvider.setSettings(setting).subscribe(result => {       //save settings on server
+    }).catch(error=>{
 
+      this.settingsProvider.ShowToast("Error saving settings") 
+    })
 
-    }, error => { this.settingsProvider.ShowToast("Error saving settings") }, () => { })
-
-    this.settingsProvider.SaveSettingsLocally(setting)  //save settings locally
   }
 
   UpdateFavoritesURL(id: number, url: string) {

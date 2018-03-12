@@ -3,6 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import { Injectable } from '@angular/core';
 import { AlertController } from 'ionic-angular';
+import { Toast } from '@ionic-native/toast';
 
 /*
   Generated class for the LoginProvider provider.
@@ -16,7 +17,7 @@ export class LoginProvider {
   ruta: string
   header: Headers
 
-  constructor(private http: Http, public alertCtrl: AlertController) {
+  constructor(private http: Http, public alertCtrl: AlertController,private toast:Toast) {
     this.ruta = "https://itorahid.3nom.com/connect/token";
     this.header = new Headers({ "Content-Type": "application/x-www-form-urlencoded" });
   }
@@ -84,5 +85,13 @@ export class LoginProvider {
     }
     else
       return ""
+  }
+
+    ShowToast(message: string) {
+    this.toast.show(message, '3000', 'center').subscribe(
+      toast => {
+        console.log(toast);
+      }
+    );
   }
 }

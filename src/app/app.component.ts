@@ -40,9 +40,15 @@ export class MyApp {
       this.splashScreen.hide();
 
       if (this.loginProvider.getToken() == '')
+      {
+        this.loginProvider.ShowToast("Login"+this.loginProvider.getToken())
         this.rootPage = LoginPage
-      else
+      }
+      else{
+        this.loginProvider.ShowToast("Home "+this.loginProvider.getToken())
         this.rootPage = HomePage
+      }
+        
     });
   }
 

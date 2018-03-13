@@ -13,7 +13,7 @@
     </ion-buttons>
     <ion-title>iTorah<label style="font-size: 10px">.com</label></ion-title>
     <ion-buttons end>
-      <button (click)="Logout()"  ion-button style="background: #508992; border-radius: 50%; color: #fc0">{{name}}</button>
+      <button (click)="Logout()" ion-button style="background: #508992; border-radius: 50%; color: #fc0">{{name}}</button>
     </ion-buttons>
     <ion-buttons end>
       <button ion-button icon-only color="light" menuToggle>
@@ -39,14 +39,14 @@
       <ion-row>
         <ion-col col-6 style="color: #3775be">Click to play</ion-col>
         <ion-col col-6 style="text-align: right;color: #3775be">
-            <span (click)="Sync()" *ngIf="!requesting&&IsSyncPosible()"><ion-icon name="sync" style="margin-right: 0.3em;"></ion-icon>Sync</span> 
-            <ion-spinner *ngIf="requesting"></ion-spinner>
+          <span (click)="Sync()" *ngIf="!requesting&&IsSyncPosible()"><ion-icon name="sync" style="margin-right: 0.3em;"></ion-icon>Sync</span>
+          <ion-spinner *ngIf="requesting"></ion-spinner>
         </ion-col>
       </ion-row>
     </ion-grid>
 
     <ion-card *ngFor="let lista of favorites">
-      <ion-item color={{ColorInFavorites(lista)}} style="padding-left: 5px" >
+      <ion-item class="item-icon-right" color={{ColorInFavorites(lista)}} style="padding-left: 5px">
         <ion-row>
           <ion-col col-11 (click)="changeColorWithPlayer(lista)">
             <div style="font-size: 15px; font-weight: bold; color: #666f76">{{lista.nombre}}</div>
@@ -56,7 +56,9 @@
             <ion-icon name="remove" style="margin-top: 10px" (click)="RemoveinFavorites(lista)"></ion-icon>
           </ion-col>
         </ion-row>
+      <ion-badge color="secondary" *ngIf="lista.url!=''">new</ion-badge>
       </ion-item>
+      
     </ion-card>
   </div>
 
@@ -78,8 +80,8 @@
             <div class="letras_browse_desc">{{lista.descripcion}}</div>
           </ion-col>
           <ion-col col-1>
-            <ion-icon *ngIf="!lista.isSavedPlaylist" name="add" style="margin-top: 10px; color: #082358; font-weight: bold" ></ion-icon>
-            <ion-icon *ngIf="lista.isSavedPlaylist" name="checkmark" style="margin-top: 10px; color: #32db64; font-weight: bold" ></ion-icon>
+            <ion-icon *ngIf="!lista.isSavedPlaylist" name="add" style="margin-top: 10px; color: #082358; font-weight: bold"></ion-icon>
+            <ion-icon *ngIf="lista.isSavedPlaylist" name="checkmark" style="margin-top: 10px; color: #32db64; font-weight: bold"></ion-icon>
           </ion-col>
         </ion-row>
       </ion-item>
@@ -122,7 +124,7 @@
             <div class="letras_browse_desc">{{lista.descripcion}}</div>
           </ion-col>
           <ion-col col-1>
-            <ion-icon *ngIf="!lista.isSavedPlaylist" name="add" style="margin-top: 10px; color: #082358; font-weight: bold" ></ion-icon>
+            <ion-icon *ngIf="!lista.isSavedPlaylist" name="add" style="margin-top: 10px; color: #082358; font-weight: bold"></ion-icon>
             <ion-icon *ngIf="lista.isSavedPlaylist" name="checkmark" style="margin-top: 10px; color: #32db64; font-weight: bold"></ion-icon>
           </ion-col>
         </ion-row>
@@ -137,12 +139,12 @@
     <ion-row style="text-align: center; padding: 0">
       <ion-col (click)="ReloadFromUI()"><button ion-button color="light" clear><ion-icon name="sync"></ion-icon></button></ion-col>
       <ion-col (click)="Back()"><button ion-button color="light" clear><ion-icon name="skip-backward"></ion-icon></button></ion-col>
-      
+
       <ion-col *ngIf="status=='play'" (click)="PauseFromUI()"><button ion-button color="light" clear><ion-icon name="pause"></ion-icon></button></ion-col>
       <ion-col *ngIf="status=='pause'" (click)="PlayFromUI()"><button ion-button color="light" clear><ion-icon name="play"></ion-icon></button></ion-col>
-      
+
       <ion-col (click)="Forward()"><button ion-button color="light" clear> <ion-icon name="skip-forward"></ion-icon></button></ion-col>
-      <ion-col (click)="Random()" ><button ion-button color="{{ColorRandom()}}" clear><ion-icon name="shuffle"></ion-icon></button></ion-col>
+      <ion-col (click)="Random()"><button ion-button color="{{ColorRandom()}}" clear><ion-icon name="shuffle"></ion-icon></button></ion-col>
     </ion-row>
   </ion-toolbar>
   <ion-toolbar color="violeta" style="padding: 0">

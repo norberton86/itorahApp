@@ -68,13 +68,13 @@ export class PlaylistPage {
     },
   ]
   // Arreglo de la lista 2
-  broweSubList: Array<Item> = [{ id: 7, nombre: "Parasha of the Week by Rabbi Eli Mansour", descripcion: "Updated 12/22/2017", color: "gris", isSavedPlaylist: false, subList: [], title: "" },
-  { id: 8, nombre: "Parasha of the Week by Rabbi Meyer Yedid", descripcion: "Updated 12/22/2017", color: "gris", isSavedPlaylist: false, subList: [], title: "" },
-  { id: 9, nombre: "Parasha of the Week by Rabbi Duvi BenSoussan", descripcion: "Updated 12/22/2017", color: "gris", isSavedPlaylist: false, subList: [], title: "" },
-  { id: 10, nombre: "Parasha of the Week by Rabbi David Sutton", descripcion: "Updated 12/22/2017", color: "gris", isSavedPlaylist: false, subList: [], title: "" },
-  { id: 11, nombre: "Parasha of the Week by Rabbi Shlomo Diamond", descripcion: "Updated 12/22/2017", color: "gris", isSavedPlaylist: false, subList: [], title: "" },
-  { id: 12, nombre: "Parasha of the Week by Rabbi Eliezer Zeytouneh", descripcion: "Updated 12/22/2017", color: "gris", isSavedPlaylist: false, subList: [], title: "" },
-  { id: 13, nombre: "Parasha of the Week by Rabbi Joey Haber", descripcion: "Updated 12/22/2017", color: "gris", isSavedPlaylist: false, subList: [], title: "" }];
+  broweSubList: Array<Item> = [{ id: 7, nombre: "Parasha of the Week", descripcion: "by Rabbi Eli Mansour", color: "gris", isSavedPlaylist: false, subList: [], title: "" },
+  { id: 8, nombre: "Parasha of the Week", descripcion: "by Rabbi Meyer Yedid", color: "gris", isSavedPlaylist: false, subList: [], title: "" },
+  { id: 9, nombre: "Parasha of the Week", descripcion: "by Rabbi Duvi BenSoussan", color: "gris", isSavedPlaylist: false, subList: [], title: "" },
+  { id: 10, nombre: "Parasha of the Week", descripcion: "by Rabbi David Sutton", color: "gris", isSavedPlaylist: false, subList: [], title: "" },
+  { id: 11, nombre: "Parasha of the Week", descripcion: "by Rabbi Shlomo Diamond", color: "gris", isSavedPlaylist: false, subList: [], title: "" },
+  { id: 12, nombre: "Parasha of the Week", descripcion: "by Rabbi Eliezer Zeytouneh", color: "gris", isSavedPlaylist: false, subList: [], title: "" },
+  { id: 13, nombre: "Parasha of the Week", descripcion: "by Rabbi Joey Haber", color: "gris", isSavedPlaylist: false, subList: [], title: "" }];
 
   //Variables para cambiar de contexto
 
@@ -148,16 +148,16 @@ export class PlaylistPage {
       newOne.id = item.id
       newOne.color = "gris"
 
-      if (item.nombre.indexOf("by") < 0)  //if it is the browlist
-      {
+      //if (item.nombre.indexOf("by") < 0)  //if it is the browlist
+      //{
         newOne.nombre = item.nombre
         newOne.descripcion = item.descripcion
-      }
+      /*}
       else                          //else it is the subBrowseList
       {
         newOne.nombre = item.nombre.split(" by ")[0]
         newOne.descripcion = "by " + item.nombre.split(" by ")[1]
-      }
+      }*/
 
       newOne.url = ''
 
@@ -349,7 +349,7 @@ export class PlaylistPage {
       }
     }
     else {
-      this.settingsProvider.ShowAlert("Oops", "This file is not available")
+      this.settingsProvider.ShowAlert("Warning", "Please Sync All")
     }
 
   }

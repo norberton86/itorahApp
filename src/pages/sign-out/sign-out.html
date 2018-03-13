@@ -1,0 +1,32 @@
+
+<ion-grid>
+    
+    <ion-row style="background: #e2e2e2">
+      <ion-col col-10>
+      <ion-icon name="person"></ion-icon>
+      <span style="padding-left: 0.5em;">Sign Out</span>
+      </ion-col>
+      <ion-col col-2 >
+        <ion-icon name="close" (click)="close()"></ion-icon>
+      </ion-col>
+    </ion-row>
+
+    <ion-row style="background: #11233e;padding-top: 0.7em;padding-bottom: 0.5em;">
+      <ion-col col-12>
+        <span style="color: white;font-size: 1.3em;">{{name}}</span>
+      </ion-col>
+    </ion-row>
+
+    <ion-row style="background: #11233e">
+      <ion-col col-12>
+        <div style="height: 2px;background: #7e9ecc;width: 100%"> </div>
+      </ion-col>
+    </ion-row>
+
+    <ion-row style="background: #11233e">
+      <ion-col col-12>
+        <span style="color: white" (click)="SignOut()">Sign Out</span>
+      </ion-col>
+    </ion-row>
+     
+</ion-grid>

@@ -1,5 +1,6 @@
 import { SettingsPage } from './../settings/settings';
 import { NoConnectionPage } from './../no-connection/no-connection';
+import { SignOutPage } from './../sign-out/sign-out';
 import { LoginPage } from './../login/login';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
@@ -17,6 +18,8 @@ import { Toast } from '@ionic-native/toast';
 import { AlertController } from 'ionic-angular';
 
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
+
+import { PopoverController } from 'ionic-angular';
 
 
 /**
@@ -38,7 +41,7 @@ export class HomePage {
 
 
   fileTransfer: FileTransferObject
-  constructor(private afs: AngularFirestore,private alertCtrl: AlertController, private toast: Toast, private settingsProvider: SettingsProvider, private file: File, private transfer: FileTransfer, private localNotifications: LocalNotifications, public navCtrl: NavController, public navParams: NavParams, private loginProvider: LoginProvider, private network: Network, private platform: Platform) {
+  constructor(public popoverCtrl: PopoverController,private afs: AngularFirestore,private alertCtrl: AlertController, private toast: Toast, private settingsProvider: SettingsProvider, private file: File, private transfer: FileTransfer, private localNotifications: LocalNotifications, public navCtrl: NavController, public navParams: NavParams, private loginProvider: LoginProvider, private network: Network, private platform: Platform) {
 
     this.disconnectSubscription = this.network.onDisconnect().subscribe(() => {
       this.goNoConnection()
@@ -98,8 +101,11 @@ export class HomePage {
     });
 
 
+    this.loginProvider.getItemsLogOut().subscribe(item=>{
+        localStorage.removeItem('userItorah')
+        this.AutoPop()
+    })
   }
-
 
   download(url: URL) {
 
@@ -114,9 +120,6 @@ export class HomePage {
         this.settingsProvider.ShowToast('Error trying to download the lectures')
       });
   }
-
-
-
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad HomePage');
@@ -186,5 +189,12 @@ export class HomePage {
     else if (this.platform.is('android')) {
       return this.file.dataDirectory;
     }
+  }
+
+  Popover(myEvent) {
+    let popover = this.popoverCtrl.create(SignOutPage);
+    popover.present({
+      ev: myEvent
+    });
   }
 }

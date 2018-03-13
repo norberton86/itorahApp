@@ -4,6 +4,7 @@ import 'rxjs/add/operator/map';
 import { Injectable } from '@angular/core';
 import { AlertController } from 'ionic-angular';
 import { Toast } from '@ionic-native/toast';
+import { Subject } from "rxjs/Subject";
 
 /*
   Generated class for the LoginProvider provider.
@@ -16,6 +17,8 @@ export class LoginProvider {
 
   ruta: string
   header: Headers
+
+    private subjectItemsLogOut: Subject<string> = new Subject<string>();
 
   constructor(private http: Http, public alertCtrl: AlertController,private toast:Toast) {
     this.ruta = "https://itorahid.3nom.com/connect/token";
@@ -93,5 +96,14 @@ export class LoginProvider {
         console.log(toast);
       }
     );
+  }
+
+
+  setItemsLogOut(item: string) {
+    this.subjectItemsLogOut.next(item)
+  }
+
+  getItemsLogOut(): Observable<string> {
+    return this.subjectItemsLogOut.asObservable();
   }
 }

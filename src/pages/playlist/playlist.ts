@@ -6,8 +6,9 @@ import { Media, MediaObject } from '@ionic-native/media';
 import { SettingsProvider, Item, ItemPlayer, URL, Setting } from '../../providers/settings/settings';
 import { LoginProvider } from '../../providers/login/login';
 import { File } from '@ionic-native/file';
+import { SignOutPage } from './../sign-out/sign-out';
 
-import { AlertController } from 'ionic-angular';
+import { AlertController, PopoverController } from 'ionic-angular';
 
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
 
@@ -85,7 +86,7 @@ export class PlaylistPage {
 
   fileTransfer: FileTransferObject
 
-  constructor(private alertCtrl: AlertController, public navCtrl: NavController, public navParams: NavParams, private settingsProvider: SettingsProvider, private media: Media, private loginProvider: LoginProvider, private file: File, private transfer: FileTransfer) {
+  constructor(public popoverCtrl: PopoverController,private alertCtrl: AlertController, public navCtrl: NavController, public navParams: NavParams, private settingsProvider: SettingsProvider, private media: Media, private loginProvider: LoginProvider, private file: File, private transfer: FileTransfer) {
 
     this.settingsProvider.getItemsInTrue().subscribe(setting => {  //to refresh the items
      
@@ -371,33 +372,11 @@ export class PlaylistPage {
     }
   }
 
-  Logout() {
-
-    let alert = this.alertCtrl.create({
-      title: 'Confirm',
-      message: 'Do you want to logout?',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          handler: () => {
-
-          }
-        },
-        {
-          text: 'Yes',
-          handler: () => {
-
-            localStorage.removeItem('userItorah')
-            this.Stop()
-            this.navCtrl.pop()
-
-          }
-        }
-      ]
+  Popover(myEvent) {
+    let popover = this.popoverCtrl.create(SignOutPage);
+    popover.present({
+      ev: myEvent
     });
-    alert.present();
-
   }
 
   Sync() {

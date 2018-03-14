@@ -138,35 +138,6 @@ export class HomePage {
     }
   }
 
-  Logout() {
-
-    let alert = this.alertCtrl.create({
-      title: 'Confirm',
-      message: 'Do you want to logout?',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          handler: () => {
-
-          }
-        },
-        {
-          text: 'Yes',
-          handler: () => {
-
-            localStorage.removeItem('userItorah')
-            this.AutoPop()
-
-          }
-        }
-      ]
-    });
-    alert.present();
-
-
-  }
-
   AutoPop() {
     this.navCtrl.push(LoginPage).then(() => {                 //remove the current page from the stack
       const startIndex = this.navCtrl.getActive().index - 1;

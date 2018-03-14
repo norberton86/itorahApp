@@ -85,7 +85,7 @@ export class LoginPage {
 
         if (typeof (error._body) !== 'undefined') {
           if (JSON.parse(error._body).error_description == "invalid_username_or_password") {
-            this.loginProvider.ShowAlert("Error", "Invalid username or password")
+            this.loginProvider.ShowToast( error._body)
           }
           else
             this.loginProvider.ShowAlert("Error", "Error trying to login")
@@ -102,9 +102,10 @@ export class LoginPage {
   Profile(token: string) {
     this.loginProvider.Profile(token).subscribe(result => {
 
-      this.requesting = false
+      
 
       this.afs.collection("usuario").doc(this.form.value.email).ref.get().then(doc=> {
+        
         if (doc.exists) 
         {
           this.setting.downloadDays= doc.data().downloadDays
@@ -116,6 +117,7 @@ export class LoginPage {
         this.LoadFromServer(token,result)
         
       }).catch(error=> {
+        this.requesting = false
         console.log("Error getting document:", error);
       });
 
@@ -134,6 +136,8 @@ export class LoginPage {
 
   LoadFromServer(token: string, data: any) {
     this.settingsProvider.getItems(token).subscribe(respond => {
+
+      this.requesting = false
 
       var d = this.setting.savedPlaylist.split(',')
 
@@ -154,7 +158,7 @@ export class LoginPage {
       this.SaveSettings()
 
 
-    }, error => { }, () => { })
+    }, error => {  this.requesting = false}, () => { })
   }
 
   items: Array<ItemPlayer> = []

@@ -194,6 +194,7 @@ export class ItemPlayer{
    descripcion:string 
    color: string 
    url:string
+   readed:boolean=false
 }
 
 export class Setting{

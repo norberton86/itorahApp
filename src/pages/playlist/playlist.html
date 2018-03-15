@@ -55,8 +55,14 @@
           <ion-col col-1>
             <ion-icon name="remove" style="margin-top: 10px" (click)="RemoveinFavorites(lista)"></ion-icon>
           </ion-col>
+        
+          <ion-icon color="unDownload" name="remove-circle-outline" *ngIf="lista.url==''"></ion-icon>
+          <ion-icon color="secondary" name="checkmark-circle-outline" *ngIf="lista.url!=''"></ion-icon>
+          <ion-badge style="margin-left: 1em;" color="secondary" *ngIf="!lista.readed&&lista.url!=''">new</ion-badge> 
+        
         </ion-row>
-        <ion-badge color="secondary" *ngIf="lista.url!=''">new</ion-badge>
+        
+        
       </ion-item>
       
     </ion-card>

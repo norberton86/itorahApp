@@ -279,6 +279,8 @@ export class PlaylistPage {
 
   changeColorWithPlayer(item: ItemPlayer): void {
 
+    this.UpdateReaded(item)
+
     if (this.itemPlaying == null) {  //if nobody is playing 
 
       this.itemPlaying = item
@@ -294,6 +296,12 @@ export class PlaylistPage {
       this.itemPlaying = item
       this.Play()
     }
+  }
+
+  UpdateReaded(item:ItemPlayer)
+  {
+     item.readed=true
+     localStorage.setItem('favorites', JSON.stringify(this.favorites))
   }
 
   ColorInFavorites(item: ItemPlayer) {

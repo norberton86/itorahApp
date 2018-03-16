@@ -21,6 +21,8 @@ export class SettingsProvider {
 
   private subjectItemsInTrue: Subject<Setting> = new Subject<Setting>();
 
+    private subjectURL: Subject<URL> = new Subject<URL>();
+
   constructor(private afs: AngularFirestore, private http: Http, public alertCtrl: AlertController,private toast:Toast) {
     this.ruta = "https://itorahapi.3nom.com/api/app/";
     this.header = new Headers({ "Content-Type": "application/json" });
@@ -129,6 +131,13 @@ export class SettingsProvider {
     return this.subjectItemsInTrue.asObservable();
   }
 
+  setItemsURL(url: URL) {
+    this.subjectURL.next(url)
+  }
+
+  getItemsInURL(): Observable<URL> {
+    return this.subjectURL.asObservable();
+  }
 
   CheckIfExist(id: number) {
     var data = new Array<ItemPlayer>()
@@ -207,4 +216,5 @@ export class Setting{
 export class URL{
   PlaylistID: number
   AudioUrl:string
+  MediaID:string
 }

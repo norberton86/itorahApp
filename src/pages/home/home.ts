@@ -118,14 +118,26 @@ export class HomePage {
 
     var arr = url.AudioUrl.split('/')
 
-    this.fileTransfer.download(url.AudioUrl, this.file.externalDataDirectory + arr[arr.length - 1]).then((entry) => {
+    this.fileTransfer.download(url.AudioUrl, this.file.externalDataDirectory + url.MediaID).then((entry) => {
 
-      this.settingsProvider.Update(url.PlaylistID, arr[arr.length - 1])
+      this.settingsProvider.Update(url.PlaylistID, url.MediaID)  //arr[arr.length - 1]
+      this.UpdateFavoritesURL(url)
       this.settingsProvider.ShowToast('Downloaded')
     },
       (error) => {
         this.settingsProvider.ShowToast('Error trying to download the lectures')
       });
+  }
+
+   UpdateFavoritesURL(url:URL) {
+    var fabs=JSON.parse(localStorage.getItem('favorites')) 
+    var candidate = fabs.find(i => i.id == url.PlaylistID)
+    if (candidate != undefined && candidate != null)
+      candidate.url = url.MediaID
+      
+    localStorage.setItem('favorites',JSON.stringify(fabs))
+
+    this.settingsProvider.setItemsURL(url)
   }
 
   ionViewDidLoad() {

@@ -117,6 +117,11 @@ export class PlaylistPage {
         this.ionViewDidLoad()
     })
 
+
+    this.settingsProvider.getItemsInURL().subscribe(url=>{
+      this.UpdateFavoritesURL(url.PlaylistID,url.MediaID)
+    })
+
     try{
       this.fileTransfer = this.transfer.create();
     }
@@ -455,10 +460,10 @@ export class PlaylistPage {
     var arr = url.AudioUrl.split('/')
 
     this.requesting = true
-    this.fileTransfer.download(url.AudioUrl, this.file.externalDataDirectory + arr[arr.length - 1]).then((entry) => {
+    this.fileTransfer.download(url.AudioUrl, this.file.externalDataDirectory + url.MediaID).then((entry) => {
       this.requesting = false
-      this.settingsProvider.Update(url.PlaylistID, arr[arr.length - 1])  //update the url on local data
-      this.UpdateFavoritesURL(url.PlaylistID, arr[arr.length - 1])       //update the object favorite(is loaded in ram memory)
+      this.settingsProvider.Update(url.PlaylistID, url.MediaID)  //update the url on local data
+      this.UpdateFavoritesURL(url.PlaylistID, url.MediaID)       //update the object favorite(is loaded in ram memory)
     },
       (error) => {
         this.requesting = false

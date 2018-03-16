@@ -39,6 +39,8 @@ export class HomePage {
   name: string = ''
   disconnectSubscription: any
 
+  firstTime:boolean=true
+
 
   fileTransfer: FileTransferObject
   constructor(public popoverCtrl: PopoverController,private afs: AngularFirestore,private alertCtrl: AlertController, private toast: Toast, private settingsProvider: SettingsProvider, private file: File, private transfer: FileTransfer, private localNotifications: LocalNotifications, public navCtrl: NavController, public navParams: NavParams, private loginProvider: LoginProvider, private network: Network, private platform: Platform) {
@@ -96,7 +98,12 @@ export class HomePage {
 
           this.settingsProvider.SaveSettingsLocally(setting)
 
-          this.settingsProvider.setItemsInTrue(setting)
+          if(!this.firstTime){
+            this.settingsProvider.setItemsInTrue(setting)
+            
+          }
+          this.firstTime=false
+
         }
     });
 

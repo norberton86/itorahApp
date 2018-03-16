@@ -26,6 +26,8 @@ import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-nati
 })
 export class PlaylistPage {
 
+  lastUpdated:string = ''
+
   // Arreglo de la lista 1 
   favorites: Array<ItemPlayer> = [];
 
@@ -109,11 +111,21 @@ export class PlaylistPage {
       });
      
      localStorage.setItem('favorites', JSON.stringify(this.favorites))
+
+ 
      //------------------------------------------------- 
         this.ionViewDidLoad()
     })
 
-    this.fileTransfer = this.transfer.create();
+    try{
+      this.fileTransfer = this.transfer.create();
+    }
+    catch(e)
+    {
+      this.settingsProvider.ShowToast('Error creating file reader')
+    }
+
+    
   }
 
 
@@ -195,6 +207,8 @@ export class PlaylistPage {
         this.name = JSON.parse(localStorage.getItem('userItorah')).name;
         this.name = this.name.split(" ")[0][0] + this.name.split(" ")[1][0]
       }
+
+      this.getLastUpdate()
     }
     catch (e) {
       this.settingsProvider.ShowToast(e)
@@ -414,11 +428,25 @@ export class PlaylistPage {
         this.download(url)
       })
 
+      this.setLastUpdate()
     }, error => {
       this.requesting = false
       this.settingsProvider.ShowToast("Error trying to get URLs")
     }, () => { })
   }
+
+  setLastUpdate()
+  {
+      var d=new Date().toISOString().split('T')
+      this.lastUpdated=d[0] + " " + d[1].split('-')[0]
+      localStorage.setItem('sync',this.lastUpdated)
+  }
+
+  getLastUpdate()
+  {
+    this.lastUpdated=localStorage.getItem('sync')==null || localStorage.getItem('sync')==undefined?"":localStorage.getItem('sync')
+  }
+
 
   requesting: boolean = false
 

@@ -8,6 +8,7 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
 import { NativeAudio } from '@ionic-native/native-audio';
 import { Toast } from '@ionic-native/toast';
 import * as moment from 'moment';
+import * as $ from "jquery";
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 
 
@@ -69,7 +70,7 @@ export class SettingsPage {
   getDays(): Array<Date> {
     var current = new Date().getDay() + 1
 
-    var dateOnForm = new Date(this.form.value.downloadTime)
+    
     var today = new Date()
 
     var arr = []
@@ -81,20 +82,33 @@ export class SettingsPage {
 
       var horaToday = parseInt(today.toLocaleTimeString().split(':')[0])
       var minutosToday = parseInt(today.toLocaleTimeString().split(':')[1])
-
       var half = new Date().toLocaleTimeString().split(' ')[1]
-      if (half == 'PM')
-        horaToday += 12
+      
+      if(horaToday==12&&half=='AM')
+        horaToday = 0
+
+      
+      var formHalf = $('.datetime-text').text().split(" ")[1].toUpperCase()
+      var formHour = parseInt($('.datetime-text').text().split(" ")[0].split(':')[0])
+      var formMinute = parseInt($('.datetime-text').text().split(" ")[0].split(':')[1])
+      
+      if(formHour==12&&formHalf=='AM')
+        formHour = 0
 
       if (current == ele) {
         if (
-          (horaToday > dateOnForm.getHours()) ||
-          (horaToday == dateOnForm.getHours() && minutosToday > dateOnForm.getMinutes()) //if the time is over for today
+          (horaToday > formHour) ||
+          (horaToday == formHour && minutosToday > formMinute) //if the time is over for today
 
-        )
+        ){
+          //this.settingsProvider.ShowToast("With 7: "+horaToday+":"+minutosToday+"  "+dateOnForm.getHours()+":"+dateOnForm.getMinutes())
           a = moment().add(7, 'days')
-        else
-          a = moment().add(0, 'days')
+        }
+        else{
+            //this.settingsProvider.ShowToast("With 0: "+horaToday+":"+minutosToday+"  "+dateOnForm.getHours()+":"+dateOnForm.getMinutes())
+            a = moment().add(0, 'days')
+        }
+          
       }
       else if (ele > current)
         a = moment().add(ele - current, 'days')
@@ -102,8 +116,13 @@ export class SettingsPage {
         a = moment().add(7 - current + ele, 'days')
 
       var date = new Date(a.toString())
-      date.setHours(dateOnForm.getHours())
-      date.setMinutes(dateOnForm.getMinutes())
+      
+      if(formHalf=='PM')
+        date.setHours(formHour+12)
+      else
+        date.setHours(formHour)
+      
+      date.setMinutes(formMinute)
 
       arr.push(date)
 
@@ -111,6 +130,9 @@ export class SettingsPage {
 
     return arr
   }
+
+
+
 
   Save() {
 
@@ -120,7 +142,7 @@ export class SettingsPage {
     this.requesting = true
 
     var setting = new Setting()
-    setting.downloadTime = new Date(this.form.value.downloadTime).toTimeString().split(' ')[0]
+    setting.downloadTime = this.form.value.downloadTime.split('T')[1].split('-')[0]
     setting.wifiOnly = this.form.value.wifiOnly
     setting.downloadDays = this.form.value.downloadDays.join(",")
     setting.savedPlaylist = this.settingsProvider.getFavoritesIds()

@@ -46,7 +46,7 @@ export class MyApp {
       }
       else{
         
-        this.rootPage = HomePage
+        this.rootPage = PlaylistPage
       }
         
     });
@@ -55,7 +55,11 @@ export class MyApp {
   openPage() {
     // Reset the content nav to have just this page
     // we wouldn't want the back button to show in this scenario
-    if(this.nav.getActive().component.name!="PlaylistPage") //avoid load the page twice
-    this.nav.push(PlaylistPage);
+    
+    if(this.nav.getActive().component.name!="PlaylistPage")
+      this.nav.pop()
+    
+    //if(this.nav.getActive().component.name!="PlaylistPage") //avoid load the page twice
+    //this.nav.push(PlaylistPage);
   }
 }

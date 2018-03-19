@@ -19,7 +19,7 @@ import { AlertController } from 'ionic-angular';
 
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 
-import { PopoverController } from 'ionic-angular';
+import { PopoverController, LoadingController, Loading } from 'ionic-angular';
 
 
 /**
@@ -39,11 +39,14 @@ export class HomePage {
   name: string = ''
   disconnectSubscription: any
 
-  firstTime:boolean=true
+  firstTime: boolean = true
 
 
   fileTransfer: FileTransferObject
-  constructor(public popoverCtrl: PopoverController,private afs: AngularFirestore,private alertCtrl: AlertController, private toast: Toast, private settingsProvider: SettingsProvider, private file: File, private transfer: FileTransfer, private localNotifications: LocalNotifications, public navCtrl: NavController, public navParams: NavParams, private loginProvider: LoginProvider, private network: Network, private platform: Platform) {
+
+  loading: Loading
+
+  constructor(public loadingCtrl: LoadingController, public popoverCtrl: PopoverController, private afs: AngularFirestore, private alertCtrl: AlertController, private toast: Toast, private settingsProvider: SettingsProvider, private file: File, private transfer: FileTransfer, private localNotifications: LocalNotifications, public navCtrl: NavController, public navParams: NavParams, private loginProvider: LoginProvider, private network: Network, private platform: Platform) {
 
     this.disconnectSubscription = this.network.onDisconnect().subscribe(() => {
       this.goNoConnection()
@@ -85,33 +88,34 @@ export class HomePage {
 
     })
 
-    this.afs.collection('usuario').doc(this.settingsProvider.getEmail()).ref.onSnapshot(doc=> {   //listen for any changes on the server
-       
-        console.log(doc.data())
-        if(!doc.metadata.hasPendingWrites) //if we have a change on the server(means is not local changes)
-        {
-          var setting=new Setting()
-          setting.downloadDays=doc.data().downloadDays
-          setting.downloadTime=doc.data().downloadTime
-          setting.savedPlaylist=doc.data().savedPlaylist
-          setting.wifiOnly=doc.data().wifiOnly
+    this.afs.collection('usuario').doc(this.settingsProvider.getEmail()).ref.onSnapshot(doc => {   //listen for any changes on the server
 
-          this.settingsProvider.SaveSettingsLocally(setting)
+      console.log(doc.data())
+      if (!doc.metadata.hasPendingWrites) //if we have a change on the server(means is not local changes)
+      {
+        var setting = new Setting()
+        setting.downloadDays = doc.data().downloadDays
+        setting.downloadTime = doc.data().downloadTime
+        setting.savedPlaylist = doc.data().savedPlaylist
+        setting.wifiOnly = doc.data().wifiOnly
 
-          if(!this.firstTime){
-            this.settingsProvider.setItemsInTrue(setting)
-            
-          }
-          this.firstTime=false
+        this.settingsProvider.SaveSettingsLocally(setting)
+
+        if (!this.firstTime) {
+          this.settingsProvider.setItemsInTrue(setting)
 
         }
+        this.firstTime = false
+
+      }
     });
 
 
-    this.loginProvider.getItemsLogOut().subscribe(item=>{
-        localStorage.removeItem('userItorah')
-        this.AutoPop()
+    this.loginProvider.getItemsLogOut().subscribe(item => {
+      if (item == "home")
+        this.navCtrl.pop()
     })
+
   }
 
   download(url: URL) {
@@ -129,13 +133,13 @@ export class HomePage {
       });
   }
 
-   UpdateFavoritesURL(url:URL) {
-    var fabs=JSON.parse(localStorage.getItem('favorites')) 
+  UpdateFavoritesURL(url: URL) {
+    var fabs = JSON.parse(localStorage.getItem('favorites'))
     var candidate = fabs.find(i => i.id == url.PlaylistID)
     if (candidate != undefined && candidate != null)
       candidate.url = url.MediaID
-      
-    localStorage.setItem('favorites',JSON.stringify(fabs))
+
+    localStorage.setItem('favorites', JSON.stringify(fabs))
 
     this.settingsProvider.setItemsURL(url)
   }
@@ -149,20 +153,26 @@ export class HomePage {
       this.name = this.name.split(" ")[0][0] + this.name.split(" ")[1][0]
     }
 
-  }
+    try {
+      this.loading = this.loadingCtrl.create({
+        content: 'Loading...',
+        dismissOnPageChange:true
+      });
 
-  ionViewDidEnter() {
-    if (this.loginProvider.getToken() == '') {
-      this.AutoPop()
+      this.loading.present();
+    } catch (e) {
+
     }
+
   }
 
-  AutoPop() {
-    this.navCtrl.push(LoginPage).then(() => {                 //remove the current page from the stack
-      const startIndex = this.navCtrl.getActive().index - 1;
-      this.navCtrl.remove(startIndex, 1);
-    });
-  }
+  /*ionViewDidEnter() {
+    if (this.loginProvider.getToken() == '') {
+      this.navCtrl.pop()
+    }
+  }*/
+
+
 
   goNoConnection(): void {
     this.navCtrl.push(NoConnectionPage)
@@ -182,9 +192,14 @@ export class HomePage {
   }
 
   Popover(myEvent) {
-    let popover = this.popoverCtrl.create(SignOutPage);
+    let popover = this.popoverCtrl.create(SignOutPage, { father: "home" });
     popover.present({
       ev: myEvent
     });
+  }
+
+  onLoad() {
+     if(this.loading!=null && this.loading!=undefined)
+      this.loading.dismiss()
   }
 }

@@ -11,6 +11,7 @@ import { SignOutPage } from './../sign-out/sign-out';
 import { AlertController, PopoverController } from 'ionic-angular';
 
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
+import { LoginPage } from "../login/login";
 
 /**
  * Generated class for the PlaylistPage page.
@@ -122,6 +123,11 @@ export class PlaylistPage {
       this.UpdateFavoritesURL(url.PlaylistID,url.MediaID)
     })
 
+    this.loginProvider.getItemsLogOut().subscribe(item=>{
+      if(item=="playList")
+        this.Close()
+    })
+
     try{
       this.fileTransfer = this.transfer.create();
     }
@@ -220,6 +226,23 @@ export class PlaylistPage {
     }
   }
 
+  ionViewDidEnter() {
+   this.Close()
+  }
+
+  Close()
+  {
+     if (this.loginProvider.getToken() == '') {
+
+      this.navCtrl.push(LoginPage).then(() => {                 //remove the current page from the stack
+        const startIndex = this.navCtrl.getActive().index - 1;
+        this.navCtrl.remove(startIndex, 1);
+      });
+
+    }
+  }
+
+
   name: string = ''
 
 
@@ -248,7 +271,7 @@ export class PlaylistPage {
   //Metodo que te envia a la pagina principal la que tiene el PaginaWeb
   goHome(): void {
     this.Stop()
-    this.navCtrl.pop();
+    this.navCtrl.push(HomePage)
   }
 
   //cambia las variables deacuedo a la vista que queremos mostrar al dar click en los botones PlayList y Browse
@@ -298,7 +321,6 @@ export class PlaylistPage {
 
   changeColorWithPlayer(item: ItemPlayer): void {
 
-    this.UpdateReaded(item)
 
     if (this.itemPlaying == null) {  //if nobody is playing 
 
@@ -317,9 +339,13 @@ export class PlaylistPage {
     }
   }
 
-  UpdateReaded(item:ItemPlayer)
+  UpdateReaded()
   {
-     item.readed=true
+     this.favorites.forEach(element => {
+      if(element.id==this.itemPlaying.id)
+        element.readed = true
+     });
+
      localStorage.setItem('favorites', JSON.stringify(this.favorites))
   }
 
@@ -339,6 +365,8 @@ export class PlaylistPage {
 
 
   Play() {
+
+
     var favoritesTemp = new Array<ItemPlayer>()
     favoritesTemp = JSON.parse(localStorage.getItem('favorites'))
 
@@ -356,6 +384,8 @@ export class PlaylistPage {
         this.myfile.play();
         this.status = "play"
         this.stopedByUser = false
+
+        this.UpdateReaded()
 
          /*
         this.myfile.onStatusUpdate.subscribe(status => {
@@ -400,7 +430,7 @@ export class PlaylistPage {
   }
 
   Popover(myEvent) {
-    let popover = this.popoverCtrl.create(SignOutPage);
+    let popover = this.popoverCtrl.create(SignOutPage,{father:"playList"});
     popover.present({
       ev: myEvent
     });

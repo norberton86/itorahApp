@@ -12,6 +12,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { Observable } from 'rxjs/Observable';
+import { PlaylistPage } from "../playlist/playlist";
 
 /**
  * Generated class for the LoginPage page.
@@ -178,7 +179,12 @@ export class LoginPage {
 
   SaveSettings() {
     this.settingsProvider.UpdateFireBase(this.setting).then(result => { }).catch(error => { })
-    this.navCtrl.push(HomePage); // this is to navigate when the login is succesful
+    //this.navCtrl.push(HomePage); // this is to navigate when the login is succesful
+
+    this.navCtrl.push(PlaylistPage).then(() => {                 //remove the current page from the stack
+      const startIndex = this.navCtrl.getActive().index - 1;
+      this.navCtrl.remove(startIndex, 1);
+    });
   }
 
 }

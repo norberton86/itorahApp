@@ -18,7 +18,10 @@ export class SignOutPage {
 
   name:string=''
 
+  father:string
+
   constructor(public navCtrl: NavController, public navParams: NavParams,public viewCtrl: ViewController,private loginProvider:LoginProvider) {
+     this.father=this.navParams.data.father
   }
 
   ionViewDidLoad() {
@@ -31,11 +34,10 @@ export class SignOutPage {
   }
 
   close() {
+    localStorage.clear()
+    this.loginProvider.setItemsLogOut(this.father)
     this.viewCtrl.dismiss();
+
   }
 
-  SignOut(){
-    this.loginProvider.setItemsLogOut("signOut")
-    this.close()
-  }
 }

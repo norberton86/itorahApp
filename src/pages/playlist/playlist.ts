@@ -8,11 +8,13 @@ import { LoginProvider } from '../../providers/login/login';
 import { File } from '@ionic-native/file';
 import { SignOutPage } from './../sign-out/sign-out';
 
-import { AlertController, PopoverController } from 'ionic-angular';
+import { AlertController, PopoverController, Platform } from 'ionic-angular';
 
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
 import { LoginPage } from "../login/login";
 import { AngularFirestore } from "angularfire2/firestore";
+import { LocalNotifications } from "@ionic-native/local-notifications";
+import { Network } from "@ionic-native/network";
 
 /**
  * Generated class for the PlaylistPage page.
@@ -93,7 +95,7 @@ export class PlaylistPage {
 
   fileTransfer: FileTransferObject
 
-  constructor(private afs: AngularFirestore,public popoverCtrl: PopoverController,private alertCtrl: AlertController, public navCtrl: NavController, public navParams: NavParams, private settingsProvider: SettingsProvider, private media: Media, private loginProvider: LoginProvider, private file: File, private transfer: FileTransfer) {
+  constructor(private localNotifications: LocalNotifications, private network: Network, private platform: Platform,private afs: AngularFirestore,public popoverCtrl: PopoverController,private alertCtrl: AlertController, public navCtrl: NavController, public navParams: NavParams, private settingsProvider: SettingsProvider, private media: Media, private loginProvider: LoginProvider, private file: File, private transfer: FileTransfer) {
 
     this.settingsProvider.getItemsInTrue().subscribe(setting => {  //to refresh the items
      
@@ -161,6 +163,38 @@ export class PlaylistPage {
 
       }
     });
+    
+    this.platform.ready().then((ready) => {
+
+      this.fileTransfer = this.transfer.create();
+
+      this.localNotifications.on('trigger', (notification, state) => {
+
+        let data = JSON.parse(notification.data)
+
+        if (this.network.type == 'wifi' && data.connectionType == true) //download only with wifi 
+        {
+
+        }
+        else  //downlaod always
+        {
+          this.settingsProvider.getURL(data.ids).subscribe(result => {
+            result.forEach(url => {
+              if (this.settingsProvider.CheckIfExist(url.PlaylistID))  //if is still on favorites
+              {
+
+                this.download(url)
+              }
+
+            })
+          })
+
+        }
+
+      })
+
+
+    })
 
     
   }

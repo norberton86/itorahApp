@@ -51,43 +51,6 @@ export class HomePage {
       this.goNoConnection()
     });
 
-
-    this.platform.ready().then((ready) => {
-
-      this.fileTransfer = this.transfer.create();
-
-      this.localNotifications.on('trigger', (notification, state) => {
-
-        let data = JSON.parse(notification.data)
-
-        if (this.network.type == 'wifi' && data.connectionType == true) //download only with wifi 
-        {
-
-        }
-        else  //downlaod always
-        {
-
-
-
-          this.settingsProvider.getURL(data.ids).subscribe(result => {
-            result.forEach(url => {
-              if (this.settingsProvider.CheckIfExist(url.PlaylistID))  //if is still on favorites
-              {
-
-                this.download(url)
-              }
-
-            })
-          })
-
-        }
-
-      })
-
-
-    })
-
-
     this.loginProvider.getItemsLogOut().subscribe(item => {
       if (item == "home")
         this.navCtrl.pop()

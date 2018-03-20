@@ -157,6 +157,8 @@ export class SettingsPage {
           this.Createtask(element, setting.savedPlaylist)
         });
 
+        this.settingsProvider.ShowToast("Saved")
+
       }) 
 
     }).catch(error=>{

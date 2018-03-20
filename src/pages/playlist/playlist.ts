@@ -12,6 +12,7 @@ import { AlertController, PopoverController } from 'ionic-angular';
 
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
 import { LoginPage } from "../login/login";
+import { AngularFirestore } from "angularfire2/firestore";
 
 /**
  * Generated class for the PlaylistPage page.
@@ -87,9 +88,12 @@ export class PlaylistPage {
   positivo: boolean = true;//Vamriable para activar y desactivar los botones (playlist y browse)
   content_sig: boolean = false;
 
+
+   firstTime: boolean = true
+
   fileTransfer: FileTransferObject
 
-  constructor(public popoverCtrl: PopoverController,private alertCtrl: AlertController, public navCtrl: NavController, public navParams: NavParams, private settingsProvider: SettingsProvider, private media: Media, private loginProvider: LoginProvider, private file: File, private transfer: FileTransfer) {
+  constructor(private afs: AngularFirestore,public popoverCtrl: PopoverController,private alertCtrl: AlertController, public navCtrl: NavController, public navParams: NavParams, private settingsProvider: SettingsProvider, private media: Media, private loginProvider: LoginProvider, private file: File, private transfer: FileTransfer) {
 
     this.settingsProvider.getItemsInTrue().subscribe(setting => {  //to refresh the items
      
@@ -135,6 +139,28 @@ export class PlaylistPage {
     {
       this.settingsProvider.ShowToast('Error creating file reader')
     }
+    
+    this.afs.collection('usuario').doc(this.settingsProvider.getEmail()).ref.onSnapshot(doc => {   //listen for any changes on the server
+
+      console.log(doc.data())
+      if (!doc.metadata.hasPendingWrites) //if we have a change on the server(means is not local changes)
+      {
+        var setting = new Setting()
+        setting.downloadDays = doc.data().downloadDays
+        setting.downloadTime = doc.data().downloadTime
+        setting.savedPlaylist = doc.data().savedPlaylist
+        setting.wifiOnly = doc.data().wifiOnly
+
+        this.settingsProvider.SaveSettingsLocally(setting)
+
+        if (!this.firstTime) {
+          this.settingsProvider.setItemsInTrue(setting)
+
+        }
+        this.firstTime = false
+
+      }
+    });
 
     
   }

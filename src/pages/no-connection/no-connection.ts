@@ -25,10 +25,7 @@ export class NoConnectionPage {
   }
 
   goPlayList():void{
-    this.navCtrl.push(PlaylistPage).then(() => {                 //remove the current page from the stack
-      const startIndex = this.navCtrl.getActive().index - 1;
-      this.navCtrl.remove(startIndex, 1);
-    });
+    this.navCtrl.popToRoot()
   }
 
   goSettings():void{                                              //remove the current page from the stack

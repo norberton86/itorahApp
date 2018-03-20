@@ -17,8 +17,6 @@ import { Toast } from '@ionic-native/toast';
 
 import { AlertController } from 'ionic-angular';
 
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
-
 import { PopoverController, LoadingController, Loading } from 'ionic-angular';
 
 
@@ -39,16 +37,17 @@ export class HomePage {
   name: string = ''
   disconnectSubscription: any
 
-  firstTime: boolean = true
+ 
 
 
   fileTransfer: FileTransferObject
 
   loading: Loading
 
-  constructor(public loadingCtrl: LoadingController, public popoverCtrl: PopoverController, private afs: AngularFirestore, private alertCtrl: AlertController, private toast: Toast, private settingsProvider: SettingsProvider, private file: File, private transfer: FileTransfer, private localNotifications: LocalNotifications, public navCtrl: NavController, public navParams: NavParams, private loginProvider: LoginProvider, private network: Network, private platform: Platform) {
+  constructor(public loadingCtrl: LoadingController, public popoverCtrl: PopoverController, private alertCtrl: AlertController, private toast: Toast, private settingsProvider: SettingsProvider, private file: File, private transfer: FileTransfer, private localNotifications: LocalNotifications, public navCtrl: NavController, public navParams: NavParams, private loginProvider: LoginProvider, private network: Network, private platform: Platform) {
 
     this.disconnectSubscription = this.network.onDisconnect().subscribe(() => {
+      
       this.goNoConnection()
     });
 
@@ -87,28 +86,6 @@ export class HomePage {
 
 
     })
-
-    this.afs.collection('usuario').doc(this.settingsProvider.getEmail()).ref.onSnapshot(doc => {   //listen for any changes on the server
-
-      console.log(doc.data())
-      if (!doc.metadata.hasPendingWrites) //if we have a change on the server(means is not local changes)
-      {
-        var setting = new Setting()
-        setting.downloadDays = doc.data().downloadDays
-        setting.downloadTime = doc.data().downloadTime
-        setting.savedPlaylist = doc.data().savedPlaylist
-        setting.wifiOnly = doc.data().wifiOnly
-
-        this.settingsProvider.SaveSettingsLocally(setting)
-
-        if (!this.firstTime) {
-          this.settingsProvider.setItemsInTrue(setting)
-
-        }
-        this.firstTime = false
-
-      }
-    });
 
 
     this.loginProvider.getItemsLogOut().subscribe(item => {
@@ -166,15 +143,15 @@ export class HomePage {
 
   }
 
-  /*ionViewDidEnter() {
-    if (this.loginProvider.getToken() == '') {
+ /* ionViewDidEnter() {
+    
       this.navCtrl.pop()
-    }
+    
   }*/
 
-
-
   goNoConnection(): void {
+
+    this.disconnectSubscription.unsubscribe();
     this.navCtrl.push(NoConnectionPage)
   }
 

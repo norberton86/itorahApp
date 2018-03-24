@@ -30,7 +30,7 @@ import { Network } from "@ionic-native/network";
 })
 export class PlaylistPage {
 
-  lastUpdated:string = ''
+  lastUpdated: string = ''
 
   // Arreglo de la lista 1 
   favorites: Array<ItemPlayer> = [];
@@ -91,57 +91,59 @@ export class PlaylistPage {
   content_sig: boolean = false;
 
 
-   firstTime: boolean = true
+  firstTime: boolean = true
 
   fileTransfer: FileTransferObject
 
-  constructor(private localNotifications: LocalNotifications, private network: Network, private platform: Platform,private afs: AngularFirestore,public popoverCtrl: PopoverController,private alertCtrl: AlertController, public navCtrl: NavController, public navParams: NavParams, private settingsProvider: SettingsProvider, private media: Media, private loginProvider: LoginProvider, private file: File, private transfer: FileTransfer) {
+  constructor(private localNotifications: LocalNotifications, private network: Network, private platform: Platform, private afs: AngularFirestore, public popoverCtrl: PopoverController, private alertCtrl: AlertController, public navCtrl: NavController, public navParams: NavParams, private settingsProvider: SettingsProvider, private media: Media, private loginProvider: LoginProvider, private file: File, private transfer: FileTransfer) {
 
     this.settingsProvider.getItemsInTrue().subscribe(setting => {  //to refresh the items
-     
-     this.itemPlaying=null
-     this.Stop()
-      
-     this.favorites=[]
+
+      this.itemPlaying = null
+      this.Stop()
+
+      this.favorites = []
 
       var d = setting.savedPlaylist.split(',')
 
       this.browseList.forEach(element => {
         if (element.id != 6 && d.indexOf(element.id.toString()) >= 0)
-          this.Add(element,false)
+          this.Add(element, false)
       });
 
 
       this.broweSubList.forEach(element => {
         if (d.indexOf(element.id.toString()) >= 0)
-          this.Add(element,false)
+          this.Add(element, false)
       });
-     
-     localStorage.setItem('favorites', JSON.stringify(this.favorites))
 
- 
-     //------------------------------------------------- 
-        this.ionViewDidLoad()
+      localStorage.setItem('favorites', JSON.stringify(this.favorites))
+
+      this.ionViewDidLoad()
+
+      //-------------------------------------------------
+
+      this.settingsProvider.Schedule(setting.downloadDays.split(','), setting.wifiOnly, setting.savedPlaylist, this.fromMilitarToAMPM(setting.downloadTime))
+
     })
 
 
-    this.settingsProvider.getItemsInURL().subscribe(url=>{
-      this.UpdateFavoritesURL(url.PlaylistID,url.MediaID)
+    this.settingsProvider.getItemsInURL().subscribe(url => {
+      this.UpdateFavoritesURL(url.PlaylistID, url.MediaID)
     })
 
-    this.loginProvider.getItemsLogOut().subscribe(item=>{
-      if(item=="playList")
+    this.loginProvider.getItemsLogOut().subscribe(item => {
+      if (item == "playList")
         this.Close()
     })
 
-    try{
+    try {
       this.fileTransfer = this.transfer.create();
     }
-    catch(e)
-    {
+    catch (e) {
       this.settingsProvider.ShowToast('Error creating file reader')
     }
-    
+
     this.afs.collection('usuario').doc(this.settingsProvider.getEmail()).ref.onSnapshot(doc => {   //listen for any changes on the server
 
       console.log(doc.data())
@@ -163,7 +165,7 @@ export class PlaylistPage {
 
       }
     });
-    
+
     this.platform.ready().then((ready) => {
 
       this.fileTransfer = this.transfer.create();
@@ -196,9 +198,8 @@ export class PlaylistPage {
 
     })
 
-    
-  }
 
+  }
 
 
   RemoveinFavorites(item: ItemPlayer) {
@@ -224,7 +225,7 @@ export class PlaylistPage {
 
   }
 
-  Add(item: Item,save:boolean=true) {
+  Add(item: Item, save: boolean = true) {
     if (this.favorites.findIndex(i => i.id == item.id) >= 0)  //if already exits
       return
     else {
@@ -234,8 +235,8 @@ export class PlaylistPage {
 
       //if (item.nombre.indexOf("by") < 0)  //if it is the browlist
       //{
-        newOne.nombre = item.nombre
-        newOne.descripcion = item.descripcion
+      newOne.nombre = item.nombre
+      newOne.descripcion = item.descripcion
       /*}
       else                          //else it is the subBrowseList
       {
@@ -246,9 +247,9 @@ export class PlaylistPage {
       newOne.url = ''
 
       this.favorites.push(newOne) //add to the favorite list
-      if(save)
-      this.SaveOnPhone()
-      
+      if (save)
+        this.SaveOnPhone()
+
 
     }
   }
@@ -287,12 +288,11 @@ export class PlaylistPage {
   }
 
   ionViewDidEnter() {
-   this.Close()
+    this.Close()
   }
 
-  Close()
-  {
-     if (this.loginProvider.getToken() == '') {
+  Close() {
+    if (this.loginProvider.getToken() == '') {
 
       this.navCtrl.push(LoginPage).then(() => {                 //remove the current page from the stack
         const startIndex = this.navCtrl.getActive().index - 1;
@@ -399,14 +399,13 @@ export class PlaylistPage {
     }
   }
 
-  UpdateReaded()
-  {
-     this.favorites.forEach(element => {
-      if(element.id==this.itemPlaying.id)
+  UpdateReaded() {
+    this.favorites.forEach(element => {
+      if (element.id == this.itemPlaying.id)
         element.readed = true
-     });
+    });
 
-     localStorage.setItem('favorites', JSON.stringify(this.favorites))
+    localStorage.setItem('favorites', JSON.stringify(this.favorites))
   }
 
   ColorInFavorites(item: ItemPlayer) {
@@ -447,18 +446,18 @@ export class PlaylistPage {
 
         this.UpdateReaded()
 
-         /*
-        this.myfile.onStatusUpdate.subscribe(status => {
-          if (status == this.media.MEDIA_STOPPED && !this.stopedByUser) {
-            this.Forward()
+        /*
+       this.myfile.onStatusUpdate.subscribe(status => {
+         if (status == this.media.MEDIA_STOPPED && !this.stopedByUser) {
+           this.Forward()
 
 
-          }
-          else if (status == this.media.MEDIA_STOPPED && this.stopedByUser) {
-            this.stopedByUser = false
+         }
+         else if (status == this.media.MEDIA_STOPPED && this.stopedByUser) {
+           this.stopedByUser = false
 
-          }
-        });*/
+         }
+       });*/
 
 
       }
@@ -490,7 +489,7 @@ export class PlaylistPage {
   }
 
   Popover(myEvent) {
-    let popover = this.popoverCtrl.create(SignOutPage,{father:"playList"});
+    let popover = this.popoverCtrl.create(SignOutPage, { father: "playList" });
     popover.present({
       ev: myEvent
     });
@@ -530,17 +529,54 @@ export class PlaylistPage {
     }, () => { })
   }
 
-  setLastUpdate()
-  {
-      var d=new Date().toISOString().split('T')
-      this.lastUpdated=d[0] + " " + d[1].split('-')[0]
-      localStorage.setItem('sync',this.lastUpdated)
+  setLastUpdate() {
+
+    this.lastUpdated = this.formatAMPM(new Date())
+    localStorage.setItem('sync', this.lastUpdated)
   }
 
-  getLastUpdate()
-  {
-    this.lastUpdated=localStorage.getItem('sync')==null || localStorage.getItem('sync')==undefined?"":localStorage.getItem('sync')
+  getLastUpdate() {
+    this.lastUpdated = localStorage.getItem('sync') == null || localStorage.getItem('sync') == undefined ? "" : localStorage.getItem('sync')
   }
+
+  formatAMPM(date) {
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    var strTime = hours + ':' + minutes + ' ' + ampm;
+    return strTime;
+  }
+
+  fromMilitarToAMPM(hora: string) {
+    var time = hora.split(':'); // convert to array
+
+    // fetch
+    var hours = Number(time[0]);
+    var minutes = Number(time[1]);
+    var seconds = Number(time[2]);
+
+    // calculate
+    var timeValue;
+
+    if (hours > 0 && hours <= 12) {
+      timeValue = "" + hours;
+    } else if (hours > 12) {
+      timeValue = "" + (hours - 12);
+    }
+    else if (hours == 0) {
+      timeValue = "12";
+    }
+
+    timeValue += (minutes < 10) ? ":0" + minutes : ":" + minutes;  // get minutes
+    //timeValue += (seconds < 10) ? ":0" + seconds : ":" + seconds;  // get seconds
+    timeValue += (hours >= 12) ? " PM" : " AM";  // get AM/PM
+
+    return timeValue
+  }
+
 
 
   requesting: boolean = false
@@ -565,12 +601,12 @@ export class PlaylistPage {
 
     var setting = this.settingsProvider.getSettingsLocally()
     setting.savedPlaylist = this.settingsProvider.getFavoritesIds() //updates the favorites ids
-    
-    this.settingsProvider.UpdateFireBase(setting).then(result=>{
 
-    }).catch(error=>{
+    this.settingsProvider.UpdateFireBase(setting).then(result => {
 
-      this.settingsProvider.ShowToast("Error saving settings") 
+    }).catch(error => {
+
+      this.settingsProvider.ShowToast("Error saving settings")
     })
 
   }
@@ -671,12 +707,11 @@ export class PlaylistPage {
       var randomPositions = []
       while (randomPositions.length != this.favorites.length) {            //to generate the numbers random
         var random = Math.floor(Math.random() * this.favorites.length);
-        if (randomPositions.findIndex(i => i == random) < 0)
-        {
-           randomPositions.push(random)
-           this.settingsProvider.ShowToast(randomPositions.length.toString())
+        if (randomPositions.findIndex(i => i == random) < 0) {
+          randomPositions.push(random)
+          this.settingsProvider.ShowToast(randomPositions.length.toString())
         }
-          
+
       }
 
       this.randomList = []
@@ -693,8 +728,8 @@ export class PlaylistPage {
 
   }
 
-  ColorRandom(){
-    return this.randomList.length==0?"light":"random"
+  ColorRandom() {
+    return this.randomList.length == 0 ? "light" : "random"
   }
 
 }

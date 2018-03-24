@@ -67,73 +67,6 @@ export class SettingsPage {
  
   now: string
 
-  getDays(): Array<Date> {
-    var current = new Date().getDay() + 1
-
-    
-    var today = new Date()
-
-    var arr = []
-    this.form.value.downloadDays.forEach(element => {
-
-      var ele = parseInt(element)
-
-      var a;
-
-      var horaToday = parseInt(today.toLocaleTimeString().split(':')[0])
-      var minutosToday = parseInt(today.toLocaleTimeString().split(':')[1])
-      var half = new Date().toLocaleTimeString().split(' ')[1]
-      
-      if(horaToday==12&&half=='AM')
-        horaToday = 0
-
-      
-      var formHalf = $('.datetime-text').text().split(" ")[1].toUpperCase()
-      var formHour = parseInt($('.datetime-text').text().split(" ")[0].split(':')[0])
-      var formMinute = parseInt($('.datetime-text').text().split(" ")[0].split(':')[1])
-      
-      if(formHour==12&&formHalf=='AM')
-        formHour = 0
-
-      if (current == ele) {
-        if (
-          (horaToday > formHour) ||
-          (horaToday == formHour && minutosToday > formMinute) //if the time is over for today
-
-        ){
-          //this.settingsProvider.ShowToast("With 7: "+horaToday+":"+minutosToday+"  "+dateOnForm.getHours()+":"+dateOnForm.getMinutes())
-          a = moment().add(7, 'days')
-        }
-        else{
-            //this.settingsProvider.ShowToast("With 0: "+horaToday+":"+minutosToday+"  "+dateOnForm.getHours()+":"+dateOnForm.getMinutes())
-            a = moment().add(0, 'days')
-        }
-          
-      }
-      else if (ele > current)
-        a = moment().add(ele - current, 'days')
-      else
-        a = moment().add(7 - current + ele, 'days')
-
-      var date = new Date(a.toString())
-      
-      if(formHalf=='PM')
-        date.setHours(formHour+12)
-      else
-        date.setHours(formHour)
-      
-      date.setMinutes(formMinute)
-
-      arr.push(date)
-
-    });
-
-    return arr
-  }
-
-
-
-
   Save() {
 
     if (this.requesting)
@@ -151,33 +84,14 @@ export class SettingsPage {
 
       this.requesting = false
 
-      this.localNotifications.cancelAll().then(result => {    //cancell all notifications
+      this.settingsProvider.Schedule(this.form.value.downloadDays,this.form.value.wifiOnly,setting.savedPlaylist,$('.datetime-text').text())
 
-        this.getDays().forEach(element => {  //create schedule for any task
-          this.Createtask(element, setting.savedPlaylist)
-        });
-
-        this.settingsProvider.ShowToast("Saved")
-
-      }) 
 
     }).catch(error=>{
       this.requesting = false
       this.settingsProvider.ShowAlert("Oops", "Error trying to save new settings")
     })
 
-  }
-
-  Createtask(time: Date, _ids: string) {
-
-    this.localNotifications.schedule({
-      id: 1,
-      title: 'Downloading',
-      text: '',
-      at: time,
-      data: { ids: _ids, connectionType: this.form.value.wifiOnly }
-    })
-    //this.settingsProvider.ShowToast(time.toString())
   }
 
 }
